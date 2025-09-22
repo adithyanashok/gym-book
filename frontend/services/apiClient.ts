@@ -1,8 +1,10 @@
 import { ApiError } from "@/types/error.type";
 import { STORAGE } from "@/utils/storage";
+import API_URL from '@/config/env.config'
+// const API_BASE_URL = 'http://192.168.1.101:3000';
+const API_BASE_URL = 'http://10.0.2.2:3000';
 
-const API_BASE_URL = 'http://192.168.1.101:3000';
-// const API_BASE_URL = 'http://10.0.2.2:3000';
+console.log(API_URL);
 
 // Extended options for apiClient with proper typing
 interface ApiClientOptions extends RequestInit {

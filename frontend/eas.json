@@ -3,18 +3,26 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
       "env": {
-        "APP_VARIANT": "development"
+        "APP_VARIANT": "development",
+        "BASE_URL": "http://localhost:3000"
       }
     },
     "preview": {
       "distribution": "internal",
       "env": {
-        "APP_VARIANT": "preview"
+        "APP_VARIANT": "preview",
+        "BASE_URL": "http://localhost:3000"
       }
     },
     "production": {
-      "autoIncrement": true
+      "distribution": "store",
+      "env": {
+        "APP_VARIANT": "production"
+      }
     }
   },
   "cli": {

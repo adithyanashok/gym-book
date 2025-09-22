@@ -1,33 +1,24 @@
 import { ConfigContext, ExpoConfig } from 'expo/config'
+const APP_VARIANT = process.env.APP_VARIANT;
 
-const IS_DEV = process.env.APP_VARIANT === 'development';
-const IS_PREVIEW = process.env.APP_VARIANT === 'preview';
+const IS_DEV = APP_VARIANT === "development";
+const IS_PREVIEW = APP_VARIANT === "preview";
 
 
 
 const getUniqueIdentifier = () => {
-  if (IS_DEV) {
-    return 'com.adithyanashokpv.gymapp.dev';
-  }
-
-  if (IS_PREVIEW) {
-    return 'com.adithyanashokpv.gymapp.preview';
-  }
-
-  return 'com.adithyanashokpv.gymapp';
+  if (IS_DEV) return "com.adithyanashokpv.gymapp.dev";
+  if (IS_PREVIEW) return "com.adithyanashokpv.gymapp.preview";
+  return "com.adithyanashokpv.gymapp";
 };
 
 const getAppName = () => {
-  if (IS_DEV) {
-    return 'GymApp (Dev)';
-  }
-
-  if (IS_PREVIEW) {
-    return 'GymApp (Preview)';
-  }
-
-  return 'GymApp';
+  if (IS_DEV) return "GymApp (Dev)";
+  if (IS_PREVIEW) return "GymApp (Preview)";
+  return "GymApp";
 };
+
+
 
 
 
@@ -89,6 +80,7 @@ export default ({ config }:ConfigContext):ExpoConfig =>  ({
     },
     "extra": {
       "router": {},
+      apiUrl: process.env.BASE_URL,
       "eas": {
         "projectId": "a85bf164-39cc-493c-840f-5c2f0d452449"
       }
