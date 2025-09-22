@@ -1,0 +1,201 @@
+import { StyleSheet } from "react-native";
+
+const addMemberStyle = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#F9FAFB",
+  },
+  scrollView: {
+    flex: 1,
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    backgroundColor: "#FFFFFF",
+    borderBottomWidth: 1,
+    borderBottomColor: "#F3F4F6",
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#111827",
+  },
+  section: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
+    padding: 20,
+    marginHorizontal: 16,
+    marginBottom: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#111827",
+    marginBottom: 16,
+  },
+  nameRow: {
+    flexDirection: "row",
+    marginBottom: 16,
+  },
+  inputContainer: {
+    marginBottom: 16,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#374151",
+    marginBottom: 8,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    color: "#111827",
+    backgroundColor: "#F9FAFB",
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    borderRadius: 8,
+    backgroundColor: "#F9FAFB",
+    overflow: "hidden",
+  },
+  picker: {
+    height: 50,
+  },
+  dateButton: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    borderRadius: 8,
+    padding: 12,
+    backgroundColor: "#F9FAFB",
+  },
+  dateText: {
+    fontSize: 16,
+    color: "#111827",
+  },
+  infoBox: {
+    backgroundColor: "#F0F9FF",
+    padding: 16,
+    borderRadius: 8,
+    borderLeftWidth: 4,
+    borderLeftColor: "#4264FB",
+  },
+  infoText: {
+    fontSize: 14,
+    color: "#374151",
+    marginBottom: 4,
+  },
+  infoLabel: {
+    fontWeight: "600",
+    color: "#4264FB",
+  },
+  switchContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  submitButton: {
+    backgroundColor: "#4264FB",
+    borderRadius: 12,
+    padding: 16,
+    marginHorizontal: 16,
+    marginBottom: 32,
+    alignItems: "center",
+    shadowColor: "#4264FB",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  submitButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  imageContainer: {
+ 
+    position: "relative",
+    alignItems:'center'
+    
+  },
+  memberImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 100,
+    borderWidth: 2,
+    borderColor: "#f3f4f6",
+  },
+  cameraIcon: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#4264FB',
+    borderRadius: 15,
+    padding: 4,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: '#FFF',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    // marginBottom: 20,
+    textAlign: 'center',
+  },
+  modalOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
+  },
+  modalOptionText: {
+    marginLeft: 16,
+    fontSize: 16,
+    color: '#1A1A1A',
+  },
+  removeOption: {
+    marginTop: 10,
+  },
+  modalCancel: {
+    marginTop: 20,
+    padding: 16,
+    alignItems: 'center',
+  },
+  modalCancelText: {
+    fontSize: 16,
+    color: '#4264FB',
+    fontWeight: 'bold',
+  },
+});
+export default addMemberStyle;
