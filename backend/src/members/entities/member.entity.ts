@@ -1,3 +1,4 @@
+import { Gym } from 'src/gym/entities/gym.entity';
 import { Plan } from 'src/plans/entities/plan.entity';
 import {
   Column,
@@ -5,6 +6,8 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -35,21 +38,19 @@ export class Member {
   @Column()
   planId: number;
 
-  @ManyToOne(() => Plan, { cascade: true, eager: true })
+  @ManyToOne(() => Plan)
   @JoinColumn({ name: 'planId' })
   plan: Plan;
+
+  @OneToOne(() => Gym)
+  @JoinColumn({ name: 'gymId' })
+  gym: Gym;
 
   @Column({ type: 'timestamptz', default: () => "CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata'" })
   startDate: Date;
 
   @Column({ type: 'timestamptz', default: () => "CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata'" })
   endDate: Date;
-
-  // @ManyToOne(() => Plan, (plan) => plan.member, { eager: true })
-  // plan: Plan;
-
-  // @OneToMany(() => UserPlan, (userPlan) => userPlan.member)
-  // userPlan: UserPlan[];
 
   @CreateDateColumn()
   createdAt: Date;

@@ -2,28 +2,30 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { PlanType } from '../enums/plan.enum';
+import { Gym } from 'src/gym/entities/gym.entity';
 
 @Entity('plan')
 export class Plan {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'enum', enum: PlanType })
-  name: PlanType;
+  @Column({ type: 'varchar' })
+  name: string;
 
   @Column({ type: 'int' })
   amount: number;
 
-  // @OneToMany(() => Member, (member) => member.plan)
-  // member: Member[];
+  @Column({ type: 'int' })
+  duration: number;
 
-  // @OneToMany(() => UserPlan, (userPlan) => userPlan.plan)
-  // userPlan: UserPlan[];
+  @ManyToOne(() => Gym, (gym) => gym.plans, { onDelete: 'CASCADE' })
+  gym: Gym;
 
   @Exclude()
   @CreateDateColumn()

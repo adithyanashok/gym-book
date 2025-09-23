@@ -1,4 +1,4 @@
 import { CreateMemberDto } from './create-member.dto';
-import { PartialType } from '@nestjs/swagger';
+import { OmitType, PartialType } from '@nestjs/swagger';
 
-export class UpdateMemberDto extends PartialType(CreateMemberDto) {}
+export class UpdateMemberDto extends PartialType(OmitType(CreateMemberDto, ['gymId', 'planId'])) {}

@@ -14,6 +14,8 @@ import { instanceToPlain } from 'class-transformer';
 import { addMonths, differenceInCalendarDays } from 'date-fns';
 import { UpdateEndDateProvider } from './providers/update-end-date.provider';
 import { GetExpiration } from 'src/common/providers/get-expiresin.providers';
+import { PlanType } from 'src/plans/enums/plan.enum';
+import { MembershipService } from 'src/membership/membership.service';
 
 @Injectable()
 export class MembersService {
@@ -48,6 +50,11 @@ export class MembersService {
      * Injecting getExpiresInProvider
      */
     private readonly getExpiresInProvider: GetExpiration,
+
+    /**
+     * Injecting membershipService
+     */
+    private readonly membershipService: MembershipService,
   ) {}
 
   // Create a new member
@@ -69,9 +76,11 @@ export class MembersService {
         throw new BadRequestException(`Plan with ID ${createMemberDto.planId} is not exist`);
       }
 
+      const planDuration = plan.duration;
+
       const endDate = this.updateEndDateProvider.updateEndDate(
         createMemberDto.startDate,
-        plan.name,
+        planDuration,
       );
 
       // Create member
@@ -83,7 +92,14 @@ export class MembersService {
 
       // Save Member
       const newMember = await this.memberRepository.save(memberInstance);
-      await this.planService.createUserPlan(newMember);
+
+      await this.membershipService.create({
+        amount: plan.amount,
+        endDate,
+        memberId: newMember.id,
+        plan_name: plan.name,
+        startDate: newMember.startDate,
+      });
 
       const expiresIn = this.getExpiresInProvider.getDaysUntilExpiration(newMember.endDate);
 
@@ -160,7 +176,7 @@ export class MembersService {
 
       const endDate = this.updateEndDateProvider.updateEndDate(
         updateMemberPlanDto.startDate,
-        plan.name,
+        plan.duration,
       );
 
       // Save New Member

@@ -18,6 +18,13 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { StatisticsModule } from './statistics/statistics.module';
 import { RedisModule } from './redis/redis.module';
 import { UploadModule } from './upload/upload.module';
+import { GymModule } from './gym/gym.module';
+import { Gym } from './gym/entities/gym.entity';
+import { Plan } from './plans/entities/plan.entity';
+import { Member } from './members/entities/member.entity';
+import { MembershipController } from './membership/membership.controller';
+import { MembershipModule } from './membership/membership.module';
+import { Membership } from './membership/entities/membership.entity';
 const ENV = process.env.NODE_ENV;
 @Module({
   imports: [
@@ -32,7 +39,8 @@ const ENV = process.env.NODE_ENV;
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        autoLoadEntities: configService.get('database.autoLoadEntities'),
+        entities: [Gym, Plan, Member, Membership],
+        // autoLoadEntities: configService.get('database.autoLoadEntities'),
         synchronize: configService.get('database.synchronize'),
         port: configService.get('database.port'),
         username: configService.get('database.username'),
@@ -52,14 +60,16 @@ const ENV = process.env.NODE_ENV;
     StatisticsModule,
     RedisModule,
     UploadModule,
+    GymModule,
+    MembershipModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, MembershipController],
   providers: [
     AppService,
-    {
-      provide: APP_GUARD,
-      useClass: JwtAuthGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: JwtAuthGuard,
+    // },
   ],
 })
 export class AppModule {}
