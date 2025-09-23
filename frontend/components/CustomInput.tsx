@@ -1,7 +1,6 @@
 import { View, Text, TextInput } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { AppColor } from "@/constants/colors";
-import { FontAwesome } from "@expo/vector-icons";
 interface Props {
   label: string;
   placeholder: string;
@@ -9,6 +8,7 @@ interface Props {
   onChange: (value: string) => void;
 }
 const CustomInput = ({ label, icon, onChange, placeholder }: Props) => {
+  const [value, setValue] = useState<string>();
   return (
     <View>
       <Text style={{ color: AppColor.grey }}>{label}</Text>
@@ -17,24 +17,27 @@ const CustomInput = ({ label, icon, onChange, placeholder }: Props) => {
           flexDirection: "row",
           alignItems: "center",
           gap: 10,
-          borderColor: AppColor.grey,
-          borderWidth: 0.2,
           borderRadius: 8,
+          height: 50,
+          marginTop: 3,
           outlineColor: AppColor.grey,
           outlineWidth: 0.2,
-          height: 54,
-          marginTop: 3,
-          paddingLeft: 12,
+          paddingLeft: 10,
         }}
       >
         {icon}
         <TextInput
+          value={value}
           placeholder={placeholder}
           placeholderTextColor={AppColor.grey}
           style={{
             fontSize: 16,
+            width: "100%",
           }}
-          onChangeText={onChange}
+          onChangeText={(val) => {
+            setValue(val);
+            onChange(val);
+          }}
         />
       </View>
     </View>

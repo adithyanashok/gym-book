@@ -1,14 +1,15 @@
 import { View, Text, TextInput, StyleSheet } from "react-native";
 import React, { useState } from "react";
 import { AppColor } from "@/constants/colors";
-import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
+import { FontAwesome, FontAwesome6, MaterialIcons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import RNPickerSelect from "react-native-picker-select";
+
 interface Props {
   label: string;
   placeholder: string;
-  icon: React.ReactNode;
-  onChange: (value: string) => void;
+  onNameChange: (value: string) => void;
+  onDurationChange: (value: string) => void;
   onDelete: () => void;
 }
 
@@ -26,30 +27,40 @@ const durations = [
   { label: "11", value: "11" },
   { label: "12", value: "12" },
 ];
-const PlanInput = ({ label, icon, onChange, placeholder, onDelete }: Props) => {
-  const [planName, setPlanName] = useState("");
-  const [planDuration, setPlanDuration] = useState("");
-  const [planDetail, setPlanDetail] = useState({});
 
-  const handle = (key, value) => {
-    setPlanDetail({
-      key,
-      value,
-    });
-  };
-  console.log(planDetail);
+const PlanInput = ({
+  label,
+  onNameChange,
+  placeholder,
+  onDelete,
+  onDurationChange,
+}: Props) => {
   return (
     <View>
-      <Text style={{ color: AppColor.grey }}>Plan Details</Text>
-      <View style={styles.inputBox}>
-        {icon}
-        <TextInput
-          placeholder={placeholder}
-          placeholderTextColor={AppColor.grey}
-          style={{
-            fontSize: 16,
-          }}
-          onChangeText={(value) => setPlanDetail({ ...planDetail, value })}
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <View style={styles.inputBox}>
+          <FontAwesome6 name="money-check" size={22} color={AppColor.grey} />
+          <TextInput
+            placeholder={placeholder}
+            placeholderTextColor={AppColor.grey}
+            style={{
+              fontSize: 16,
+              width: "100%",
+            }}
+            onChangeText={onNameChange}
+          />
+        </View>
+        <MaterialIcons
+          onPress={() => onDelete()}
+          name="delete-outline"
+          size={24}
+          color={AppColor.grey}
         />
       </View>
 
@@ -57,7 +68,7 @@ const PlanInput = ({ label, icon, onChange, placeholder, onDelete }: Props) => {
         <RNPickerSelect
           placeholder={{ label: "Duration", color: AppColor.grey }}
           style={{ placeholder: { color: AppColor.grey } }}
-          onValueChange={(value) => setPlanDetail({ ...planDetail, value })}
+          onValueChange={onDurationChange}
           items={durations.map((e) => ({
             label: `${e.label} Month`,
             value: e.value,
@@ -83,6 +94,7 @@ const styles = StyleSheet.create({
     height: 54,
     marginTop: 10,
     paddingLeft: 12,
+    width: "90%",
   },
   dropdownBox: {
     borderColor: AppColor.grey,
