@@ -10,6 +10,7 @@ interface Props {
   placeholder: string;
   onNameChange: (value: string) => void;
   onDurationChange: (value: string) => void;
+  onAmountChange: (value: string) => void;
   onDelete: () => void;
 }
 
@@ -34,6 +35,7 @@ const PlanInput = ({
   placeholder,
   onDelete,
   onDurationChange,
+  onAmountChange,
 }: Props) => {
   return (
     <View>
@@ -45,7 +47,11 @@ const PlanInput = ({
         }}
       >
         <View style={styles.inputBox}>
-          <FontAwesome6 name="money-check" size={22} color={AppColor.grey} />
+          <MaterialIcons
+            name="card-membership"
+            size={22}
+            color={AppColor.grey}
+          />
           <TextInput
             placeholder={placeholder}
             placeholderTextColor={AppColor.grey}
@@ -61,6 +67,18 @@ const PlanInput = ({
           name="delete-outline"
           size={24}
           color={AppColor.grey}
+        />
+      </View>
+      <View style={styles.inputBox}>
+        <FontAwesome6 name="money-check" size={22} color={AppColor.grey} />
+        <TextInput
+          placeholder={"1000"}
+          placeholderTextColor={AppColor.grey}
+          style={{
+            fontSize: 16,
+            width: "100%",
+          }}
+          onChangeText={onAmountChange}
         />
       </View>
 

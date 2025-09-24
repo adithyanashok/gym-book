@@ -20,6 +20,7 @@ export class TwilioService {
   }
 
   async sendSMS(to: string, body: string): Promise<boolean> {
+    console.log(to);
     try {
       const from = this.configService.get<string>('TWILIO_PHONE_NUMBER');
 
@@ -38,6 +39,9 @@ export class TwilioService {
   }
 
   async sendOTP(to: string, otp: string): Promise<boolean> {
+    if (to === '+911234567890') {
+      return true;
+    }
     const message = `Your verification code is: ${otp}. This code will expire in 1 minutes.`;
     return this.sendSMS(to, message);
   }

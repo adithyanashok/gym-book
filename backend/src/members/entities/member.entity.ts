@@ -42,7 +42,7 @@ export class Member {
   @JoinColumn({ name: 'planId' })
   plan: Plan;
 
-  @OneToOne(() => Gym)
+  @ManyToOne(() => Gym)
   @JoinColumn({ name: 'gymId' })
   gym: Gym;
 

@@ -89,11 +89,9 @@ export class StaffsService {
       const otpExpire = Date.now() + 1 * 60 * 1000;
       staff.otp = parseInt(otp);
       staff.otp_expire = otpExpire;
+
       await this.staffRepository.save(staff);
 
-      if (phone === '1234567890') {
-        return new ApiResponse(true, 'OTP send successfully', { staffId: staff.id });
-      }
       const otpStatus = await this.twilioService.sendOTP(`+91${staff.phone}`, otp);
 
       if (otpStatus) {
@@ -108,7 +106,7 @@ export class StaffsService {
 
   public async staffOtpVerify(otpVerifyDto: OtpVerifyDto) {
     try {
-      const staff = await this.staffRepository.findOneBy({ id: otpVerifyDto.staffId });
+      const staff = await this.staffRepository.findOneBy({ id: 1 });
       if (!staff) {
         throw new BadRequestException('User not found');
       }
@@ -123,11 +121,11 @@ export class StaffsService {
       staff.otp = null;
       staff.otp_expire = null;
 
-      const tokens = await this.authService.generateToken(staff);
+      // const tokens = await this.authService.generateToken({});
 
       return new ApiResponse(true, `${staff.name} is LoggedIn`, {
-        accessToken: tokens.accessToken,
-        refreshToken: tokens.refreshToken,
+        accessToken: 'tokens.accessToken',
+        refreshToken: 'tokens.refreshToken',
         userId: staff.id,
       });
     } catch (error) {

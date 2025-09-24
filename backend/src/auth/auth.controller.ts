@@ -7,6 +7,7 @@ import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { StaffsService } from 'src/staffs/staffs.service';
 import { OtpVerifyDto } from './dtos/otp-verify.dto';
 import type { Request } from 'express';
+import { GymService } from 'src/gym/gym.service';
 
 @Controller('auth')
 export class AuthController {
@@ -20,12 +21,17 @@ export class AuthController {
      * Injecting staffService
      */
     private readonly staffService: StaffsService,
+
+    /**
+     * Injecting gymService
+     */
+    private readonly gymService: GymService,
   ) {}
 
   @Public()
   @Post('/otp')
   @ApiOperation({
-    summary: 'Send login OTP for staff login',
+    summary: 'Send OTP for login',
   })
   @ApiResponse({
     status: 200,
@@ -36,7 +42,7 @@ export class AuthController {
     description: 'Bad Request',
   })
   public staffLoginOtp(@Body() signinDto: SignInDto) {
-    return this.staffService.staffLoginOtp(signinDto.phoneNumber);
+    return this.gymService.gymLogin(signinDto.phoneNumber);
   }
 
   @Public()
@@ -53,13 +59,13 @@ export class AuthController {
     description: 'Bad Request',
   })
   public verifyOTP(@Body() otpVerifyDto: OtpVerifyDto) {
-    return this.staffService.staffOtpVerify(otpVerifyDto);
+    return this.gymService.verifyOtp(otpVerifyDto);
   }
 
   @ApiBearerAuth()
   @Post('/logout')
   @ApiOperation({
-    summary: 'Logout user',
+    summary: 'Logout Gym',
   })
   @ApiResponse({
     status: 200,
@@ -71,7 +77,7 @@ export class AuthController {
   })
   async logout(@Req() request: Request) {
     const token = this.extractTokenFromHeader(request);
-    return this.staffService.logout(token);
+    return this.gymService.logout(token);
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {

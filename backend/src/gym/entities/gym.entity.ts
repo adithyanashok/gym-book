@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { RoleType } from '../enums/role.enum';
 
 @Entity()
 export class Gym {
@@ -28,6 +29,29 @@ export class Gym {
 
   @OneToMany(() => Plan, (plan) => plan.gym, { cascade: true, onDelete: 'CASCADE' })
   plans: Plan[];
+
+  @Column({
+    type: 'int',
+    nullable: true,
+  })
+  otp?: number | null;
+
+  @Column({
+    type: 'bigint',
+    nullable: true,
+  })
+  otp_expire?: number | null;
+
+  @Column({ type: 'boolean', default: false })
+  active: boolean;
+
+  @Column({
+    type: 'enum',
+    enum: RoleType,
+    default: RoleType.GYM,
+    nullable: false,
+  })
+  role: RoleType;
 
   @CreateDateColumn()
   createdAt: Date;

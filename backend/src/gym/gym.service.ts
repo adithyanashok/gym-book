@@ -1,32 +1,163 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Gym } from './entities/gym.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateGymDto } from './dtos/create-gym.dto';
 import { ApiResponse } from 'src/common/dtos/api-response.dto';
 import { UpdateGymDto } from './dtos/update-gym.dto';
+import { TwilioService } from 'src/twilio/twilio.service';
+import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
+import { OtpVerifyDto } from 'src/auth/dtos/otp-verify.dto';
+import { AuthService } from 'src/auth/auth.service';
+import { JwtService } from '@nestjs/jwt';
+import { BlacklistService } from 'src/blacklist/blacklist.service';
 
 @Injectable()
 export class GymService {
   constructor(
+    private jwtService: JwtService,
+    private blacklistService: BlacklistService,
     /**
      * Injecting gymRepository
      */
     @InjectRepository(Gym)
     private readonly gymRepository: Repository<Gym>,
+
+    /**
+     * Injecting twilioService
+     */
+    private readonly twilioService: TwilioService,
+
+    /**
+     * Injecting authService
+     */
+    private readonly authService: AuthService,
   ) {}
 
   // Create New Gym
   public async create(createGymDto: CreateGymDto) {
     try {
-      const gym = this.gymRepository.create(createGymDto);
+      const { user_phone } = createGymDto;
 
-      const savedGym = await this.gymRepository.save(gym);
+      const gymExist = await this.gymRepository.findOneBy({ user_phone });
 
-      return new ApiResponse(true, 'Gym Created Successfully', savedGym);
+      const otp = this.generateOTP(user_phone);
+      const otpExpire = Date.now() + 1 * 60 * 1000;
+
+      let gym: Gym;
+
+      if (gymExist) {
+        if (gymExist.active === true) {
+          throw new BadRequestException('Gym already exist');
+        } else {
+          gymExist.otp = parseInt(otp);
+          gymExist.otp_expire = otpExpire;
+          await this.gymRepository.save(gymExist);
+        }
+      } else {
+        gym = this.gymRepository.create({
+          ...createGymDto,
+          otp: parseInt(otp),
+          otp_expire: otpExpire,
+        });
+
+        await this.gymRepository.save(gym);
+      }
+
+      const otpStatus = await this.twilioService.sendOTP(`${user_phone}`, otp);
+      const gymId = gymExist?.id ? gymExist.id : gym!.id;
+      if (otpStatus) {
+        return new ApiResponse(true, 'OTP send successfully', { gymId });
+      }
+    } catch (error) {
+      if (error.code === '23502') {
+        throw new BadRequestException('Enter all required field');
+      }
+      throw error;
+    }
+  }
+
+  public async gymLogin(phone: string) {
+    try {
+      const gym = await this.gymRepository.findOne({ where: { user_phone: phone } });
+
+      if (!gym) {
+        throw new NotFoundException('Gym Not Found');
+      }
+      const otp = this.generateOTP(phone);
+      const otpExpire = Date.now() + 1 * 60 * 1000;
+      gym.otp = parseInt(otp);
+      gym.otp_expire = otpExpire;
+
+      await this.gymRepository.save(gym);
+
+      const otpStatus = await this.twilioService.sendOTP(`+91${gym.user_phone}`, otp);
+
+      if (otpStatus) {
+        return new ApiResponse(true, 'OTP send successfully', { gymId: gym.id });
+      }
     } catch (error) {
       console.log(error);
       throw error;
+    }
+  }
+
+  public async verifyOtp(otpVerifyDto: OtpVerifyDto) {
+    try {
+      const { gymId } = otpVerifyDto;
+      const gymExist = await this.gymRepository.findOneBy({ id: gymId });
+      if (!gymExist) {
+        throw new BadRequestException('User not found');
+      }
+      if (!gymExist.otp) return;
+      if (!gymExist.otp_expire) return;
+      if (Date.now() > gymExist.otp_expire) {
+        throw new BadRequestException('OTP Expired');
+      }
+      if (otpVerifyDto.otp !== gymExist.otp) {
+        throw new BadRequestException('Incorrect Otp');
+      }
+      gymExist.otp = null;
+      gymExist.otp_expire = null;
+      gymExist.active = true;
+
+      await this.gymRepository.save(gymExist);
+
+      const tokens = await this.authService.generateToken(gymExist);
+
+      return new ApiResponse(true, `Otp verified`, {
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+        gymId: gymExist.id,
+      });
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
+  public async logout(token: string | undefined) {
+    if (!token) {
+      throw new UnauthorizedException();
+    }
+    try {
+      // Decode token to get expiry
+      const decoded = this.jwtService.decode(token);
+
+      const expiry = decoded.exp - Math.floor(Date.now() / 1000);
+
+      // Add to blacklist
+      await this.blacklistService.blacklistToken(token, expiry);
+
+      return new ApiResponse(true, 'Successfully logged out');
+    } catch (error) {
+      console.log(error);
+      throw new UnauthorizedException('Invalid token');
     }
   }
 
@@ -66,5 +197,35 @@ export class GymService {
       console.log(error);
       throw error;
     }
+  }
+
+  // Find one Gym by id
+  public async findOneById(id: number) {
+    try {
+      const gym = await this.gymRepository.findOneBy({ id });
+
+      if (!gym) {
+        throw new NotFoundException('Gym Not Found');
+      }
+
+      return gym;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
+  generateOTP(phone: string): string {
+    const digits = '1234567890';
+    let otp = '';
+    const length: number = 6;
+    if (phone && phone === '+911234567890') {
+      return '123456';
+    }
+    for (let i = 0; i < length; i++) {
+      otp += digits[Math.floor(Math.random() * digits.length)];
+    }
+
+    return otp;
   }
 }

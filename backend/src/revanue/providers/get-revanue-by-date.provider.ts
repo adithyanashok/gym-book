@@ -1,32 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Membership } from '../entities/membership.entity';
 import { Repository } from 'typeorm';
-import { UserPlan } from 'src/plans/entities/user-plan.entity';
+import { Membership } from 'src/membership/entities/membership.entity';
 
 @Injectable()
 export class GetRevanueByDateProvider {
   constructor(
     /**
-     * Injecting planRepository
+     * Injecting membershipRepository
      */
     @InjectRepository(Membership)
     private readonly membershipRepository: Repository<Membership>,
-
-    /**
-     * Injecting planRepository
-     */
-    @InjectRepository(UserPlan)
-    private readonly userPlanRepository: Repository<UserPlan>,
   ) {}
-  public async get(start: Date, end: Date) {
+  public async get(start: Date, end: Date, gymId: number) {
+    console.log(start);
+    console.log(end);
     // Query members created within date range
-    const membership = await this.userPlanRepository
-      .createQueryBuilder('userPlan')
-      .where('userPlan.createdAt BETWEEN :start AND :end', { start, end })
-      .leftJoinAndSelect('userPlan.member', 'member')
-      .leftJoinAndSelect('member.plan', 'plan')
-      .orderBy('userPlan.createdAt', 'ASC')
+    const membership = await this.membershipRepository
+      .createQueryBuilder('membership')
+      .leftJoinAndSelect('membership.gym', 'gym')
+      .where('membership.gymId = :gymId', { gymId })
+      .where('membership.createdAt BETWEEN :start AND :end', { start, end })
+      .orderBy('membership.createdAt', 'ASC')
       .getMany();
 
     // Group plans by month and count them
@@ -41,7 +36,7 @@ export class GetRevanueByDateProvider {
       }
 
       // Add the plan amount to the monthly total
-      prevMembership[monthYear] += membership.member.plan.amount;
+      prevMembership[monthYear] += membership.amount;
 
       return prevMembership;
     }, {});
@@ -53,7 +48,7 @@ export class GetRevanueByDateProvider {
 
     const totalRevanue = membership.reduce(
       (prev, membership) => {
-        prev['totalRev'] += membership.member.plan.amount;
+        prev['totalRev'] += membership.amount;
 
         return prev;
       },

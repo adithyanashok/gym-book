@@ -5,6 +5,9 @@ import { Provider } from "react-redux";
 import { useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import { STORAGE } from "@/utils/storage";
+import { StyleSheet, Text, View } from "react-native";
+import SafeScreen from "@/components/SafeArea";
+import { AppColor } from "@/constants/colors";
 
 export default function RootLayout() {
   // const router = useRouter();
@@ -30,13 +33,40 @@ export default function RootLayout() {
   return (
     <Provider store={store}>
       <SnackbarProvider>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(onboarding)" />
-          <Stack.Screen name="(auth)" />
+        <Stack>
+          <Stack.Screen
+            name="(onboarding)"
+            options={{
+              header(props) {
+                return (
+                  <View style={styles.header}>
+                    <Text style={styles.heading}>GymMaster</Text>
+                  </View>
+                );
+              },
+            }}
+          />
+          {/* <Stack.Screen name="(auth)" />
           <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="(member)" />
+          <Stack.Screen name="(member)" /> */}
         </Stack>
       </SnackbarProvider>
     </Provider>
   );
 }
+
+const styles = StyleSheet.create({
+  header: {
+    elevation: 2,
+    backgroundColor: "white",
+  },
+  heading: {
+    marginTop: 60,
+    marginBottom: 10,
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
+    justifyContent: "flex-end",
+    color: AppColor.primary,
+  },
+});

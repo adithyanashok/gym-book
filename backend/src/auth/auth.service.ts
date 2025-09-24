@@ -5,15 +5,11 @@ import * as jwtConfigNS from './config/jwt.config';
 import { JwtService } from '@nestjs/jwt';
 import { Staff } from 'src/staffs/entities/staff.entity';
 import { Inject, Injectable } from '@nestjs/common';
+import { Gym } from 'src/gym/entities/gym.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
-    /**
-     * Injecting staffsService
-     */
-    private readonly staffsService: StaffsService,
-
     /**
      * Injecting jwtService
      */
@@ -38,16 +34,16 @@ export class AuthService {
     );
   }
 
-  public async generateToken(staff: Staff) {
+  public async generateToken(gym: Gym) {
     const [accessToken, refreshToken] = await Promise.all([
       // Access Token
-      this.signToken(staff.id, this.jwtConfig.jwtAccessTokenTTL, {
-        phone: staff.phone,
-        role: staff.role,
+      this.signToken(gym.id, this.jwtConfig.jwtAccessTokenTTL, {
+        phone: gym.user_phone,
+        role: gym.role,
       }),
 
       // Refresh Token
-      this.signToken(staff.id, this.jwtConfig.jwtRefreshTokenTTL),
+      this.signToken(gym.id, this.jwtConfig.jwtRefreshTokenTTL),
     ]);
 
     return { accessToken, refreshToken };

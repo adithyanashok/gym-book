@@ -1,4 +1,4 @@
-package com.adithyanashokpv.gymapp
+package com.adithyanashokpv.gymapp.dev
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

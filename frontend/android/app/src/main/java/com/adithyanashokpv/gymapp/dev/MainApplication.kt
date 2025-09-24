@@ -1,4 +1,4 @@
-package com.adithyanashokpv.gymapp
+package com.adithyanashokpv.gymapp.dev
 
 import android.app.Application
 import android.content.res.Configuration

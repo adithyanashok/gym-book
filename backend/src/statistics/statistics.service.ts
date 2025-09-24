@@ -5,7 +5,7 @@ import { ApiResponse } from 'src/common/dtos/api-response.dto';
 import { GetByDateDto } from 'src/common/dtos/get-by-date.dto';
 import { GetExpiration } from 'src/common/providers/get-expiresin.providers';
 import { Member } from 'src/members/entities/member.entity';
-import { Membership } from 'src/revanue/entities/membership.entity';
+import { Membership } from 'src/membership/entities/membership.entity';
 import { GetRevanueByDateProvider } from 'src/revanue/providers/get-revanue-by-date.provider';
 import { Repository } from 'typeorm';
 
@@ -35,15 +35,18 @@ export class StatisticsService {
     private readonly getExpiresInProvider: GetExpiration,
   ) {}
 
-  public async getMonthlyStatistics(dateDto: GetByDateDto) {
+  public async getMonthlyStatistics(dateDto: GetByDateDto, gymId: number) {
     const { startDate } = dateDto;
-
     const start = new Date(startDate);
-    const end = addMonths(start, 1);
 
     // Previous Month
     const prevMonthStart = subMonths(start, 1);
-    const prevMonthEnd = start;
+    const prevMonthEnd = addMonths(prevMonthStart, 1);
+
+    // Current Month
+
+    const startMonth = start;
+    const end = addMonths(startMonth, 1);
 
     // Current Year
     const year = new Date().getFullYear();
@@ -51,17 +54,13 @@ export class StatisticsService {
     const startOfYear = new Date(year, 0, 1);
 
     const endOfYear = new Date(year, 11, 31);
-
-    // Set time boundaries correctly
-    end.setHours(23, 59, 59, 999);
     prevMonthEnd.setHours(23, 59, 59, 999);
-
     try {
       // Execute all async operations in parallel for better performance
       const [totalMembers, revenueRaw, prevRevenueRaw] = await Promise.all([
-        this.getMembersInDateRange(startOfYear, endOfYear),
-        this.getRevanueByDateProvider.get(start, end),
-        this.getRevanueByDateProvider.get(prevMonthStart, prevMonthEnd),
+        this.getMembersInDateRange(startOfYear, endOfYear, gymId),
+        this.getRevanueByDateProvider.get(start, end, gymId),
+        this.getRevanueByDateProvider.get(prevMonthStart, prevMonthEnd, gymId),
       ]);
 
       // Members from previous month
@@ -76,11 +75,14 @@ export class StatisticsService {
         return date >= start && date <= end;
       });
 
-      // Map monthlyRevenues to extract revenue values correctly
-      const currentMonthRevenue = revenueRaw.monthlyRevenues[0]?.revanue ?? 0;
-      const prevMonthRevenue = prevRevenueRaw.monthlyRevenues[0]?.revanue ?? 0;
+      // Current Month Data
+      const currentData = revenueRaw.monthlyRevenues[0];
+      const currentMonth = currentData?.month;
+      const revanue = currentData?.revanue ?? 0;
 
-      const currentMonth = revenueRaw.monthlyRevenues[0]?.month ?? 0;
+      // Prev Month Data
+      const prevData = prevRevenueRaw.monthlyRevenues[0];
+      const prevMonthRevenue = prevData?.revanue ?? 0;
 
       const activeMembers = members.filter(
         (member) => this.getExpiresInProvider.getDaysUntilExpiration(member.endDate) > 0,
@@ -90,25 +92,26 @@ export class StatisticsService {
         isSameYearAndMonth(member.createdAt, new Date()),
       );
 
-      const revenueIncrease = this.calculatePercentageIncrease(
-        currentMonthRevenue,
-        prevMonthRevenue,
-      );
+      const revenueIncrease = this.calculatePercentageIncrease(revanue ?? 0, prevMonthRevenue);
       const memberIncrease = this.calculatePercentageIncrease(
         members.length,
         prevMonthMembers.length,
       );
 
       const data = {
+        currentMonthData: {
+          revenue: revanue,
+          currentMonth,
+          revenueIncrease,
+          memberIncrease,
+          activeMembers: activeMembers.length,
+          newMembers: newMembers.length,
+        },
+        prevMonthData: {
+          prevMonthMembersCount: prevMonthMembers.length,
+          prevMonthRevenue,
+        },
         totalMembers: totalMembers.length,
-        revenue: currentMonthRevenue,
-        activeMembers: activeMembers.length,
-        newMembers: newMembers.length,
-        revenueIncrease,
-        memberIncrease,
-        prevMonthMembersCount: prevMonthMembers.length,
-        prevMonthRevenue,
-        currentMonth,
       };
 
       return new ApiResponse(true, 'Successfully Fetched', data);
@@ -120,10 +123,12 @@ export class StatisticsService {
   }
 
   // Helper method to avoid code duplication
-  private async getMembersInDateRange(start: Date, end: Date) {
+  private async getMembersInDateRange(start: Date, end: Date, gymId: number) {
     return this.memberRepository
       .createQueryBuilder('member')
+      .leftJoinAndSelect('member.gym', 'gym')
       .where('member.createdAt BETWEEN :start AND :end', { start, end })
+      .where('member.gymId = :gymId', { gymId })
       .orderBy('member.createdAt', 'ASC')
       .getMany();
   }

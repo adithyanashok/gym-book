@@ -118,66 +118,66 @@ export class PlanService {
     }
   }
 
-  // Createing new user plan
-  public async getRevanueByDate(dateRange: GetByDateDto) {
-    try {
-      const { startDate } = dateRange;
+  // // Createing new user plan
+  // public async getRevanueByDate(dateRange: GetByDateDto) {
+  //   try {
+  //     const { startDate } = dateRange;
 
-      // Convert string dates to Date objects
-      const start = new Date(startDate);
-      const end = addMonths(start, 1);
-      end.setHours(23, 59, 59, 999);
+  //     // Convert string dates to Date objects
+  //     const start = new Date(startDate);
+  //     const end = addMonths(start, 1);
+  //     end.setHours(23, 59, 59, 999);
 
-      // Query members created within date range
-      const userPlan = await this.userPlanRepository
-        .createQueryBuilder('userPlan')
-        .where('userPlan.createdAt BETWEEN :start AND :end', { start, end })
-        .leftJoinAndSelect('userPlan.member', 'member')
-        .leftJoinAndSelect('member.plan', 'plan')
-        .orderBy('userPlan.createdAt', 'ASC')
-        .getMany();
+  //     // Query members created within date range
+  //     const userPlan = await this.userPlanRepository
+  //       .createQueryBuilder('userPlan')
+  //       .where('userPlan.createdAt BETWEEN :start AND :end', { start, end })
+  //       .leftJoinAndSelect('userPlan.member', 'member')
+  //       .leftJoinAndSelect('member.plan', 'plan')
+  //       .orderBy('userPlan.createdAt', 'ASC')
+  //       .getMany();
 
-      // Group plans by month and count them
-      const monthlyRevenue = userPlan.reduce((prevUserPlan, userPlan) => {
-        const monthYear = userPlan.createdAt.toLocaleString('default', {
-          month: 'long',
-          year: 'numeric',
-        });
+  //     // Group plans by month and count them
+  //     const monthlyRevenue = userPlan.reduce((prevUserPlan, userPlan) => {
+  //       const monthYear = userPlan.createdAt.toLocaleString('default', {
+  //         month: 'long',
+  //         year: 'numeric',
+  //       });
 
-        if (!prevUserPlan[monthYear]) {
-          prevUserPlan[monthYear] = 0;
-        }
+  //       if (!prevUserPlan[monthYear]) {
+  //         prevUserPlan[monthYear] = 0;
+  //       }
 
-        // Add the plan amount to the monthly total
-        prevUserPlan[monthYear] += userPlan.member.plan.amount;
+  //       // Add the plan amount to the monthly total
+  //       prevUserPlan[monthYear] += userPlan.member.plan.amount;
 
-        return prevUserPlan;
-      }, {});
-      // Convert to array format
-      const result = Object.entries(monthlyRevenue).map(([month, revanue]) => ({
-        month,
-        revanue,
-      }));
+  //       return prevUserPlan;
+  //     }, {});
+  //     // Convert to array format
+  //     const result = Object.entries(monthlyRevenue).map(([month, revanue]) => ({
+  //       month,
+  //       revanue,
+  //     }));
 
-      const totalRevanue = userPlan.reduce(
-        (prev, userPlan) => {
-          prev['totalRev'] += userPlan.member.plan.amount;
+  //     const totalRevanue = userPlan.reduce(
+  //       (prev, userPlan) => {
+  //         prev['totalRev'] += userPlan.member.plan.amount;
 
-          return prev;
-        },
-        { totalRev: 0 },
-      );
-      const data = {
-        totalRevanue: totalRevanue.totalRev,
-        monthlyRevenues: result,
-      };
+  //         return prev;
+  //       },
+  //       { totalRev: 0 },
+  //     );
+  //     const data = {
+  //       totalRevanue: totalRevanue.totalRev,
+  //       monthlyRevenues: result,
+  //     };
 
-      return new ApiResponse(true, 'Successfully Fetched', data);
-    } catch (error) {
-      console.log(error);
-      throw new BadRequestException();
-    }
-  }
+  //     return new ApiResponse(true, 'Successfully Fetched', data);
+  //   } catch (error) {
+  //     console.log(error);
+  //     throw new BadRequestException();
+  //   }
+  // }
 
   // Get plan distribution
   public async getPlanDistribution(dateRangeDto: GetByDateDto) {

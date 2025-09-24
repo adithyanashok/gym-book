@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDate, IsEmpty, IsNotEmpty, IsString } from 'class-validator';
+import { Gym } from 'src/gym/entities/gym.entity';
 
 export class CreateMemberDto {
   @ApiProperty({ example: 'Adithyan' })

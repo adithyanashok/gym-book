@@ -8,10 +8,12 @@ import jwtConfig from './config/jwt.config';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { BlacklistService } from 'src/blacklist/blacklist.service';
 import { RedisModule } from 'src/redis/redis.module';
+import { GymModule } from 'src/gym/gym.module';
 
 @Module({
   imports: [
     RedisModule,
+    forwardRef(() => GymModule),
     forwardRef(() => StaffsModule),
     ConfigModule.forFeature(jwtConfig),
     JwtModule.registerAsync(jwtConfig.asProvider()),

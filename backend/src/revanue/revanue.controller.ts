@@ -1,7 +1,8 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, Req } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { GetByDateDto } from 'src/common/dtos/get-by-date.dto';
 import { RevanueService } from './revanue.service';
+import type { AuthenticatedRequest } from 'src/common/request/request';
 @ApiBearerAuth()
 @Controller('revanue')
 export class RevanueController {
@@ -11,12 +12,14 @@ export class RevanueController {
      */
     private readonly revanueService: RevanueService,
   ) {}
-  @Get()
+  @Get('/:gymId')
   @ApiOperation({ summary: 'Get revanue by date range' })
   @ApiResponse({ status: 200, description: 'revanue retrieved successfully' })
   @ApiResponse({ status: 400, description: 'Invalid date range' })
-  public async getMembersByDateRange(@Query() dateRangeDto: GetByDateDto) {
-    console.log('Date range:', dateRangeDto);
-    return await this.revanueService.getRevanueByDate(dateRangeDto);
+  public async getMembersByDateRange(
+    @Req() req: AuthenticatedRequest,
+    @Query() dateRangeDto: GetByDateDto,
+  ) {
+    return await this.revanueService.getRevanueByDate(dateRangeDto, req.user['sub']);
   }
 }

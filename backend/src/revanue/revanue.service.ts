@@ -2,11 +2,11 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GetByDateDto } from 'src/common/dtos/get-by-date.dto';
 import { Repository } from 'typeorm';
-import { Membership } from './entities/membership.entity';
 import { ApiResponse } from 'src/common/dtos/api-response.dto';
 import { UserPlan } from 'src/plans/entities/user-plan.entity';
 import { GetRevanueByDateProvider } from './providers/get-revanue-by-date.provider';
 import { addMonths } from 'date-fns';
+import { Membership } from 'src/membership/entities/membership.entity';
 
 @Injectable()
 export class RevanueService {
@@ -30,7 +30,7 @@ export class RevanueService {
   ) {}
 
   // Createing new user plan
-  public async getRevanueByDate(dateRange: GetByDateDto) {
+  public async getRevanueByDate(dateRange: GetByDateDto, gymId: number) {
     try {
       const { startDate } = dateRange;
 
@@ -46,7 +46,7 @@ export class RevanueService {
 
       const endOfYear = new Date(year, 11, 31);
 
-      const data = await this.getRevanueByDateProvider.get(startOfYear, endOfYear);
+      const data = await this.getRevanueByDateProvider.get(startOfYear, endOfYear, gymId);
 
       return new ApiResponse(true, 'Successfully Fetched', data);
     } catch (error) {

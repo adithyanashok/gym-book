@@ -22,16 +22,17 @@ import PlanInput from "./components/PlanInput";
 import addMemberStyle from "../(member)/styles/add-member.styles";
 import { router } from "expo-router";
 import { useToast } from "@/hooks/useToasts";
-
-interface PlanDetail {
-  duration: string;
-  name: string;
-}
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store/store";
+import { createGym } from "@/store/slices/gymSlice";
+import { GymData } from "@/types/gym.type";
+import { PlanData } from "@/types/plan.type";
 
 const CreateGym = () => {
   const toast = useToast();
+  const dispatch = useDispatch<AppDispatch>();
   const [planIds, setPlanIds] = useState<number[]>([]);
-  const [planDetails, setPlanDetails] = useState<PlanDetail[]>([]);
+  const [planDetails, setPlanDetails] = useState<PlanData[]>([]);
   const [gymDetails, setGymDetails] = useState({
     name: "",
     phone: "",
@@ -48,12 +49,12 @@ const CreateGym = () => {
     const newPlanId = generatePlanId();
     setPlanIds((prev) => [...prev, newPlanId]);
     // Add empty plan detail for the new plan
-    setPlanDetails((prev) => [...prev, { duration: "", name: "" }]);
+    setPlanDetails((prev) => [...prev, { duration: "", name: "", amount: 0 }]);
   };
 
   const handlePlanDetailChange = (
     planId: number,
-    field: keyof PlanDetail,
+    field: keyof PlanData,
     value: string
   ) => {
     setPlanDetails((prev) => {
@@ -95,6 +96,14 @@ const CreateGym = () => {
     console.log("Gym Details:", gymDetails);
     console.log("Plan Details:", planDetails);
 
+    const gymData: GymData = {
+      gym_name: gymDetails.gymName,
+      user_email: gymDetails.email,
+      user_phone: gymDetails.phone,
+      username: gymDetails.name,
+      plans: planDetails,
+    };
+
     // Filter out empty plans
     const validPlans = planDetails.filter(
       (plan) => plan.name.trim() && plan.duration.trim()
@@ -116,7 +125,14 @@ const CreateGym = () => {
       return;
     }
 
-    router.push("/(auth)/otp");
+    console.log(gymData);
+    dispatch(createGym({ data: gymData }))
+      .then((e) => {
+        console.log(e);
+      })
+      .catch((e) => {
+        console.error(e);
+      });
     // Submit logic here
   };
 
@@ -182,6 +198,9 @@ const CreateGym = () => {
                 onDurationChange={(value) =>
                   handlePlanDetailChange(planId, "duration", value)
                 }
+                onAmountChange={(value) =>
+                  handlePlanDetailChange(planId, "amount", value)
+                }
                 onDelete={() => handleDeletePlan(planId)}
               />
             ))}
@@ -220,7 +239,7 @@ const styles = StyleSheet.create({
   headingText: {
     fontSize: 28,
     fontWeight: "bold",
-    margin: 12,
+    marginLeft: 12,
     color: AppColor.primary,
   },
   sectionContainer: {

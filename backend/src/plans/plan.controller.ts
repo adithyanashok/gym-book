@@ -51,14 +51,14 @@ export class PlansController {
     return this.planService.updateById(id, updateplanDto);
   }
 
-  @Get('/get/by-date')
-  @ApiOperation({ summary: 'Get revanue by date range' })
-  @ApiResponse({ status: 200, description: 'revanue retrieved successfully' })
-  @ApiResponse({ status: 400, description: 'Invalid date range' })
-  public async getMembersByDateRange(@Query() dateRangeDto: GetByDateDto) {
-    console.log('Date range:', dateRangeDto);
-    return await this.planService.getRevanueByDate(dateRangeDto);
-  }
+  // @Get('/get/by-date')
+  // @ApiOperation({ summary: 'Get revanue by date range' })
+  // @ApiResponse({ status: 200, description: 'revanue retrieved successfully' })
+  // @ApiResponse({ status: 400, description: 'Invalid date range' })
+  // public async getMembersByDateRange(@Query() dateRangeDto: GetByDateDto) {
+  //   console.log('Date range:', dateRangeDto);
+  //   return await this.planService.getRevanueByDate(dateRangeDto);
+  // }
 
   @Get('/get-plan-distribution')
   @ApiOperation({ summary: 'Get plan distribution' })

@@ -1,4 +1,4 @@
-import { Member } from 'src/members/entities/member.entity';
+import { Gym } from 'src/gym/entities/gym.entity';
 
 export class CreateMembershipDto {
   startDate: Date;
@@ -6,4 +6,5 @@ export class CreateMembershipDto {
   memberId: number;
   plan_name: string;
   amount: number;
+  gym: Gym;
 }

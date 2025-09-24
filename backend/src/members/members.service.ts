@@ -12,10 +12,11 @@ import { GetByDateDto } from '../common/dtos/get-by-date.dto';
 import { AmountsService } from 'src/amounts/amounts.service';
 import { instanceToPlain } from 'class-transformer';
 import { addMonths, differenceInCalendarDays } from 'date-fns';
-import { UpdateEndDateProvider } from './providers/update-end-date.provider';
+import { UpdateEndDateProvider } from '../common/providers/update-end-date.provider';
 import { GetExpiration } from 'src/common/providers/get-expiresin.providers';
 import { PlanType } from 'src/plans/enums/plan.enum';
 import { MembershipService } from 'src/membership/membership.service';
+import { GymService } from 'src/gym/gym.service';
 
 @Injectable()
 export class MembersService {
@@ -55,6 +56,11 @@ export class MembersService {
      * Injecting membershipService
      */
     private readonly membershipService: MembershipService,
+
+    /**
+     * Injecting gymService
+     */
+    private readonly gymService: GymService,
   ) {}
 
   // Create a new member
@@ -72,8 +78,13 @@ export class MembersService {
 
       const plan = await this.planService.findOneBy(createMemberDto.planId);
 
+      const gym = await this.gymService.findOneById(createMemberDto.gymId);
+
       if (!plan) {
         throw new BadRequestException(`Plan with ID ${createMemberDto.planId} is not exist`);
+      }
+      if (!gym) {
+        throw new BadRequestException(`Gym with ID ${createMemberDto.gymId} is not exist`);
       }
 
       const planDuration = plan.duration;
@@ -88,6 +99,7 @@ export class MembersService {
         ...createMemberDto,
         endDate: endDate,
         plan: plan,
+        gym,
       });
 
       // Save Member
@@ -99,6 +111,7 @@ export class MembersService {
         memberId: newMember.id,
         plan_name: plan.name,
         startDate: newMember.startDate,
+        gym: newMember.gym,
       });
 
       const expiresIn = this.getExpiresInProvider.getDaysUntilExpiration(newMember.endDate);
