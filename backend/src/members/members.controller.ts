@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   Query,
+  Req,
 } from '@nestjs/common';
 import { MembersService } from './members.service';
 import { CreateMemberDto } from './dtos/create-member.dto';
@@ -17,6 +18,7 @@ import { UpdateMemberPlanDto } from './dtos/update-member-plan.dto';
 import { GetByDateDto } from 'src/common/dtos/get-by-date.dto';
 import { Public } from 'src/common/decorators/public.decorator';
 import { SearchMemberDto } from './dtos/search-member.dto';
+import type { AuthenticatedRequest } from 'src/common/request/request';
 
 @ApiBearerAuth()
 @ApiTags('Members')
@@ -48,7 +50,6 @@ export class MembersController {
   }
 
   // Search member
-  @Public()
   @Get('/search')
   @ApiOperation({ summary: 'Search members' })
   @ApiResponse({
@@ -56,13 +57,12 @@ export class MembersController {
     description: 'Successfully Fetched',
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
-  public async searchMembers(@Query() searchMemberDto: SearchMemberDto) {
-    return await this.membersService.searchMember(
-      searchMemberDto.query,
-      searchMemberDto.page,
-      searchMemberDto.limit,
-      searchMemberDto.planId,
-    );
+  public async searchMembers(
+    @Req() req: AuthenticatedRequest,
+    @Query() searchMemberDto: SearchMemberDto,
+  ) {
+    console.log(req.user);
+    return await this.membersService.searchMember(req.user['sub'], searchMemberDto);
   }
 
   // Get Member By Id

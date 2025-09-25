@@ -4,7 +4,6 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   Alert,
-  Image,
   Modal,
   Platform,
   ScrollView,
@@ -13,7 +12,6 @@ import {
   View,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { Camera, CameraView } from "expo-camera";
 import { SafeAreaView } from "react-native-safe-area-context";
 import PersonalInformation from "./components/PersonalInformation";
 import addMemberStyle from "./styles/add-member.styles";
@@ -24,15 +22,12 @@ import {
   addMemberImage,
   createMember,
   editMember,
-  selectMember,
   selectMemberCreateLoading,
-  selectMemberLoading,
 } from "@/store/slices/membersSlice";
 import { ApiResponse, Member, MemberData } from "@/types/member.types";
-import Snackbar from "react-native-snackbar";
 import { useToast } from "@/hooks/useToasts";
-import { add } from "lodash";
 import Loading from "@/components/Loading";
+import { selectedPlans } from "@/store/slices/plansSlice";
 type SelectedImage = {
   uri: string;
   type: string;
@@ -40,11 +35,13 @@ type SelectedImage = {
 };
 export default function AddMember() {
   const dispatch = useDispatch<AppDispatch>();
-  // const [uri, setUri] = useState<string | null>(null);
-  // const [showCamera, setShowCamera] = useState<boolean>(false);
+
   const [selectedImage, setSelectedImage] = useState<SelectedImage | null>(
     null
   );
+
+  const plans = useSelector(selectedPlans);
+
   const [showImageOptions, setShowImageOptions] = useState(false);
 
   const isLoading = useSelector(selectMemberCreateLoading);
@@ -64,14 +61,12 @@ export default function AddMember() {
     email: memberParam?.email ?? "",
     phone: memberParam?.phone ?? "",
     address: memberParam?.address ?? "",
-    planId: memberParam?.planId ?? 2,
+    planId: memberParam?.planId ?? plans[0].id,
     startDate: memberParam?.startDate
       ? new Date(memberParam?.startDate)
       : new Date(),
     image: null,
   });
-
-  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const handleInputChange = (field: any, value: any) => {
     setFormData((prev) => ({
@@ -81,7 +76,6 @@ export default function AddMember() {
   };
 
   const handleDateChange = (event: any, selectedDate: any) => {
-    setShowDatePicker(Platform.OS === "ios");
     if (selectedDate) {
       handleInputChange("startDate", selectedDate);
     }
@@ -109,6 +103,7 @@ export default function AddMember() {
 
         router.back();
       } else {
+        console.log(memberData);
         const fileData = new FormData();
         fileData.append("file", {
           uri: selectedImage?.uri,
@@ -131,7 +126,7 @@ export default function AddMember() {
           });
 
         toast.success("Success, Member created successfully!");
-        router.back();
+        // router.back();
       }
     } catch (error: unknown) {
       toast.error(error as string);

@@ -1,67 +1,108 @@
-import { ApiError } from "@/types/error.type";
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import { Platform } from "react-native";
 import { STORAGE } from "@/utils/storage";
-import API_URL from '@/config/env.config'
-// const API_BASE_URL = 'http://192.168.1.101:3000';
-const API_BASE_URL = 'http://10.0.2.2:3000';
 
-console.log(API_URL);
+const API_BASE_URL =
+  Platform.OS === "android"
+    ? "http://10.0.2.2:3000" // Android emulator
+    : "http://localhost:3000"; // iOS simulator
 
-// Extended options for apiClient with proper typing
-interface ApiClientOptions extends RequestInit {
-  headers?: HeadersInit;
-}
+// Create axios instance with default config
+const axiosInstance: AxiosInstance = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 10000, // 10 seconds
+  headers: {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  },
+});
 
-// Generic helper function for API requests with TypeScript
-export async function apiClient<T>(endpoint: string, options: ApiClientOptions = {}): Promise<T> {
-  const url = `${API_BASE_URL}${endpoint}`;
-  const token = await STORAGE.getData('accessToken')
-
-  const config: RequestInit = {
-    headers: {
-      'Accept': '*/*',
-      'Authorization': `Bearer ${token}`,
-      ...options.headers,
-    },
-    ...options,
-  };
-  console.log(url)
-  console.log(config)
-  try {
-      const response = await fetch(url, config);
-
-    // Check if the response is successful (status 2xx)
-    if (!response.ok) {
-      // Try to get error data from response, but handle cases where response isn't JSON
-      let errorMessage:ApiError = {error:`HTTP error!`,  statusCode: `${response.status}`, message:"Error Occured!"};
-      
-      
-      try {
-        const errorData = await response.json();
-        console.log("Error", errorData)
-        errorMessage = errorData || errorMessage;
-      } catch (parseError) {
-
-        console.log("ParseError", parseError)
-
-        // If response isn't JSON, use status text
-        
-        errorMessage = {error:response.statusText,  statusCode: `${response.status}`, message: response.statusText};
-      }
-     
-      throw new Error(errorMessage.message, {cause:401});
+// Request interceptor to add auth token
+axiosInstance.interceptors.request.use(
+  async (config) => {
+    const token = await STORAGE.getData("accessToken");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
-
-      
-
-
-    return await response.json() as T;
-    
-  } catch (error) {
-    console.log("catch", error.message)
-    // Re-throw the error to be handled by the caller
-    if (error instanceof Error) {
-      throw new Error(error.message || 'Network request failed');
-    }
-    throw new Error('Network request failed');
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-}
+);
+
+// Response interceptor to handle errors
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.log("API Error:", error.response?.data?.message || error.message);
+    return Promise.reject(error.response?.data?.message || error.message);
+  }
+);
+
+// Generic API client function
+export const apiClient = {
+  post: async <T>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig
+  ): Promise<T> => {
+    const response: AxiosResponse<T> = await axiosInstance.post(
+      url,
+      data,
+      config
+    );
+    return response.data;
+  },
+
+  get: async <T>(url: string, config?: AxiosRequestConfig): Promise<T> => {
+    const response: AxiosResponse<T> = await axiosInstance.get(url, config);
+    return response.data;
+  },
+
+  put: async <T>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig
+  ): Promise<T> => {
+    const response: AxiosResponse<T> = await axiosInstance.put(
+      url,
+      data,
+      config
+    );
+    return response.data;
+  },
+
+  patch: async <T>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig
+  ): Promise<T> => {
+    const response: AxiosResponse<T> = await axiosInstance.patch(
+      url,
+      data,
+      config
+    );
+    return response.data;
+  },
+
+  delete: async <T>(url: string, config?: AxiosRequestConfig): Promise<T> => {
+    const response: AxiosResponse<T> = await axiosInstance.delete(url, config);
+    return response.data;
+  },
+  upload: async <T>(
+    url: string,
+    formData: FormData,
+    method: "post" | "patch" | "put" = "patch"
+  ): Promise<T> => {
+    const response: AxiosResponse<T> = await axiosInstance({
+      method,
+      url,
+      data: formData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  },
+};

@@ -15,20 +15,20 @@ export class Gym {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 92 })
-  gym_name: string;
+  @Column({ nullable: true, type: 'varchar', length: 92 })
+  gym_name?: string;
 
-  @Column({ type: 'varchar', length: 92 })
-  username: string;
+  @Column({ nullable: true, type: 'varchar', length: 92 })
+  username?: string;
 
   @Column({ type: 'varchar', length: 92 })
   user_phone: string;
 
-  @Column({ type: 'varchar', length: 92 })
-  user_email: string;
+  @Column({ nullable: true, type: 'varchar', length: 92 })
+  user_email?: string;
 
   @OneToMany(() => Plan, (plan) => plan.gym, { cascade: true, onDelete: 'CASCADE' })
-  plans: Plan[];
+  plans?: Plan[];
 
   @Column({
     type: 'int',
@@ -44,6 +44,9 @@ export class Gym {
 
   @Column({ type: 'boolean', default: false })
   active: boolean;
+
+  @Column({ type: 'boolean', default: false })
+  isDetailComplete: boolean;
 
   @Column({
     type: 'enum',

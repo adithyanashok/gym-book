@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import addMemberStyle from "../styles/add-member.styles";
 import { Picker } from "@react-native-picker/picker";
@@ -23,13 +23,7 @@ const MembershipPlan = ({
   handleInputChange,
 }: MembershipPlanProps) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
-
-  const dispatch = useDispatch<AppDispatch>();
   const plans = useSelector(selectedPlans);
-
-  useEffect(() => {
-    dispatch(fetchPlans());
-  }, [dispatch]);
 
   const getPlanPrice = () => {
     return plans.find((plan) => plan.id === formData.planId)?.amount || 0;
@@ -39,17 +33,12 @@ const MembershipPlan = ({
     const startDate = new Date(formData.startDate);
     let endDate = new Date(startDate);
 
-    switch (formData.planId) {
-      case 2:
-        endDate.setMonth(endDate.getMonth() + 1);
-        break;
-      case 1:
-        endDate.setMonth(endDate.getMonth() + 3);
-        break;
-      case 3:
-        endDate.setFullYear(endDate.getFullYear() + 1);
-        break;
-    }
+    const duration =
+      plans.find((plan) => {
+        return plan.id === formData.planId;
+      })?.duration || 1;
+
+    endDate.setMonth(endDate.getMonth() + duration);
 
     return endDate.toDateString();
   };

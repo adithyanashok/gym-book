@@ -1,10 +1,10 @@
-import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query, Req } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreatePlanDto } from './dtos/create-plan.dto';
 import { UpdatePlanDto } from './dtos/update-plan.dto';
 import { PlanService } from './plan.service';
 import { GetByDateDto } from 'src/common/dtos/get-by-date.dto';
-
+import type { AuthenticatedRequest } from 'src/common/request/request';
 @ApiBearerAuth()
 @ApiTags('plans')
 @Controller('plans')
@@ -35,8 +35,8 @@ export class PlansController {
     description: 'Successfully Fetched',
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
-  public async getPlans() {
-    return this.planService.getPlans();
+  public async getPlans(@Req() req: AuthenticatedRequest) {
+    return this.planService.getPlans(req.user['sub']);
   }
 
   // Update plan By Id

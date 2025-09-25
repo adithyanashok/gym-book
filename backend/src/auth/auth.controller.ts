@@ -29,7 +29,24 @@ export class AuthController {
   ) {}
 
   @Public()
-  @Post('/otp')
+  @Post('/signup/otp')
+  @ApiOperation({
+    summary: 'Send OTP for Signup',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'OTP send successfully',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request',
+  })
+  public gymSignupLogin(@Body() signinDto: SignInDto) {
+    return this.gymService.gymSignup(signinDto);
+  }
+
+  @Public()
+  @Post('/login/otp')
   @ApiOperation({
     summary: 'Send OTP for login',
   })
@@ -41,7 +58,7 @@ export class AuthController {
     status: 400,
     description: 'Bad Request',
   })
-  public staffLoginOtp(@Body() signinDto: SignInDto) {
+  public gymSigninLogin(@Body() signinDto: SignInDto) {
     return this.gymService.gymLogin(signinDto.phoneNumber);
   }
 

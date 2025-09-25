@@ -63,6 +63,7 @@ const PersonalInformation = ({
           style={addMemberStyle.input}
           placeholder="+1 234 567 8900"
           keyboardType="phone-pad"
+          maxLength={10}
           inputMode="tel"
           value={formData.phone}
           onChangeText={(text) => onInputChange("phone", text)}

@@ -17,6 +17,7 @@ import { GetExpiration } from 'src/common/providers/get-expiresin.providers';
 import { PlanType } from 'src/plans/enums/plan.enum';
 import { MembershipService } from 'src/membership/membership.service';
 import { GymService } from 'src/gym/gym.service';
+import { SearchMemberDto } from './dtos/search-member.dto';
 
 @Injectable()
 export class MembersService {
@@ -253,22 +254,27 @@ export class MembersService {
     }
   }
 
-  public async searchMember(query?: string, page: number = 1, limit: number = 10, planId?: number) {
+  public async searchMember(gymId: number, searchMemberDto: SearchMemberDto) {
+    const { limit, page, planId, query } = searchMemberDto;
     try {
       let returnVal: [Member[], number];
       if (!query) {
         // Return all users if no search query
         returnVal = await this.memberRepository.findAndCount({
-          skip: (page - 1) * limit,
+          skip: ((page ?? 1) - 1) * (limit ?? 10),
           take: limit,
-          where: { planId },
+          where: { gym: { id: gymId }, planId },
           order: { createdAt: 'DESC' },
           relations: ['plan'],
         });
       } else {
         returnVal = await this.memberRepository.findAndCount({
-          where: [{ name: ILike(`%${query}%`) }, { phone: ILike(`%${query}%`) }, { planId }],
-          skip: (page - 1) * limit,
+          where: [
+            { name: ILike(`%${query}%`) },
+            { phone: ILike(`%${query}%`) },
+            { gym: { id: gymId }, planId },
+          ],
+          skip: ((page ?? 1) - 1) * (limit ?? 10),
           take: limit,
           order: { createdAt: 'DESC' },
           relations: ['plan'],

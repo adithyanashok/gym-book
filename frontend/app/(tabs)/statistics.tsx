@@ -107,7 +107,7 @@ export default function Statistics() {
 
             <SummaryCard
               label="Active Members"
-              value={statistics.activeMembers}
+              value={statistics.currentMonthData.activeMembers}
               backgroundColor="#10B981"
               iconComponent={
                 <MaterialCommunityIcons
@@ -122,7 +122,7 @@ export default function Statistics() {
           <View style={styles.summaryRow}>
             <SummaryCard
               label="New This Month"
-              value={statistics.newMembers}
+              value={statistics.currentMonthData.newMembers}
               backgroundColor="#F59E0B"
               iconComponent={
                 <Ionicons name="person-add" size={24} color="#FFFFFF" />
@@ -130,7 +130,7 @@ export default function Statistics() {
             />
             <SummaryCard
               label="Revanue"
-              value={statistics.revenue}
+              value={statistics.currentMonthData.revenue}
               backgroundColor="#EF4444"
               iconComponent={
                 <FontAwesome5

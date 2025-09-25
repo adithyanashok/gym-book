@@ -1,8 +1,9 @@
 import { fetchMembers, selectMembers } from "@/store/slices/membersSlice";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
+  RefreshControl,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -20,6 +21,7 @@ import SearchBar from "../../components/SearchBar";
 import MemberCardTile from "@/components/MemberCardTile";
 
 export default function Members() {
+  const [refreshing, setRefreshing] = useState(false);
   const [activeFilter, setActiveFilter] = useState(0);
   const dispatch = useDispatch<AppDispatch>();
 
@@ -29,12 +31,19 @@ export default function Members() {
     dispatch(fetchPlans());
     const fetchParams =
       activeFilter && activeFilter !== 0 ? { planId: activeFilter } : {};
-
     dispatch(fetchMembers(fetchParams));
   }, [dispatch, activeFilter]);
 
   const members = useSelector(selectMembers);
   const plans = useSelector(selectedPlans);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await dispatch(fetchPlans()).unwrap();
+    await dispatch(fetchMembers({})).unwrap();
+
+    setRefreshing(false);
+  }, [dispatch]);
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
@@ -47,7 +56,15 @@ export default function Members() {
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
-        stickyHeaderIndices={[1]} // Make filters sticky when scrolling
+        stickyHeaderIndices={[1]}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#0000FF"]}
+            tintColor="#0000ff"
+          />
+        }
       >
         {/* Search Bar */}
         <SearchBar />

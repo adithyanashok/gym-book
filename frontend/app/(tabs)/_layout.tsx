@@ -1,4 +1,5 @@
 import { AppColor } from "@/constants/colors";
+import { Ionicons } from "@expo/vector-icons";
 import Feather from "@expo/vector-icons/Feather";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Tabs } from "expo-router";
@@ -13,6 +14,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
+          headerShown: false,
           title: "Home",
           tabBarIcon: ({ focused, color, size }) => (
             <Feather name="home" size={24} color={color} />
@@ -34,6 +36,15 @@ export default function TabLayout() {
           title: "Statistics",
           tabBarIcon: ({ focused, color, size }) => (
             <FontAwesome6 name="chart-line" size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="my-gym"
+        options={{
+          title: "Gym Profile",
+          tabBarIcon: ({ focused, color, size }) => (
+            <Ionicons name="person-circle-outline" size={24} color={color} />
           ),
         }}
       />

@@ -1,9 +1,7 @@
-import { StaffsService } from 'src/staffs/staffs.service';
 import jwtConfig from './config/jwt.config';
 import type { ConfigType } from '@nestjs/config';
 import * as jwtConfigNS from './config/jwt.config';
 import { JwtService } from '@nestjs/jwt';
-import { Staff } from 'src/staffs/entities/staff.entity';
 import { Inject, Injectable } from '@nestjs/common';
 import { Gym } from 'src/gym/entities/gym.entity';
 

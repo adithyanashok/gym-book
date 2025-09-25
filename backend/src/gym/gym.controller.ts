@@ -1,11 +1,12 @@
-import { Body, Controller, Delete, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, ParseIntPipe, Patch, Query, Req } from '@nestjs/common';
 import { GymService } from './gym.service';
-import { CreateGymDto } from './dtos/create-gym.dto';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { AddGymDto } from './dtos/add-gym.dto';
+import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Public } from 'src/common/decorators/public.decorator';
-import { UpdateGymDto } from './dtos/update-gym.dto';
+import type { AuthenticatedRequest } from 'src/common/request/request';
 
 @Controller('gym')
+@ApiBearerAuth()
 export class GymController {
   constructor(
     /**
@@ -14,19 +15,6 @@ export class GymController {
     private readonly gymService: GymService,
   ) {}
 
-  @Public()
-  @Post()
-  @ApiOperation({ summary: 'Create gym' })
-  @ApiResponse({
-    status: 201,
-    description: 'Gym Created Successfully',
-  })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
-  public async create(@Body() createGymDto: CreateGymDto) {
-    return await this.gymService.create(createGymDto);
-  }
-
-  @Public()
   @Patch()
   @ApiOperation({ summary: 'Update gym' })
   @ApiResponse({
@@ -35,8 +23,8 @@ export class GymController {
   })
   @ApiResponse({ status: 404, description: 'Gym not found.' })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
-  public async update(@Query('id', ParseIntPipe) id: number, @Body() updateGymDto: UpdateGymDto) {
-    return await this.gymService.update(id, updateGymDto);
+  public async update(@Req() req: AuthenticatedRequest, @Body() addGymDto: AddGymDto) {
+    return await this.gymService.addGym(req.user['sub'], addGymDto);
   }
 
   @Public()

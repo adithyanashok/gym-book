@@ -1,21 +1,27 @@
 export type Statistics = {
-    totalMembers:number,
-    revenue: number,
-    currentMonth:string
-    activeMembers:number,
-    newMembers:number,
-    revenueIncrease: number,
-    memberIncrease: number,
-    prevMonthMembersCount: number,
-    prevMonthRevenue: number,
-}
+  currentMonthData: CurrentMonthData;
+  prevMonthData: PrevMonthData;
+  totalMembers: number;
+};
+type CurrentMonthData = {
+  revenue: number;
+  currentMonth: string;
+  revenueIncrease: number;
+  memberIncrease: number;
+  activeMembers: number;
+  newMembers: number;
+};
 
+type PrevMonthData = {
+  prevMonthMembersCount: number;
+  prevMonthRevenue: number;
+};
 export type RevanueData = {
-    totalRevanue:number,
-    monthlyRevenues:Revanue[],
-}
+  totalRevanue: number;
+  monthlyRevenues: Revanue[];
+};
 
 export type Revanue = {
-    month:string,
-    revanue:number,
-}
+  month: string;
+  revanue: number;
+};

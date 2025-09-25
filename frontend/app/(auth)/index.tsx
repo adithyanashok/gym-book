@@ -9,7 +9,7 @@ import {
   Platform,
   Alert,
 } from "react-native";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import {
@@ -19,27 +19,30 @@ import {
   selectLoginResponse,
 } from "@/store/slices/adminSlice";
 import { useToast } from "@/hooks/useToasts";
+import { AppColor } from "@/constants/colors";
+import { ScreenName } from "@/types/screen-name.type";
+import { gymLogin, gymSignup } from "@/store/slices/gymSlice";
 
 export default function LoginScreen() {
+  const screen = useLocalSearchParams<{ screenName: ScreenName }>();
   const dispatch = useDispatch<AppDispatch>();
-
-  const err = useSelector(selectAdminError);
-  const loginResponse = useSelector(selectLoginResponse);
+  const [screenName, setScreenName] = useState<ScreenName>(screen.screenName);
 
   // STATES
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [phone, setPhoneNumber] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [validationError, setValidationError] = useState<null | string>(null);
 
   const toast = useToast();
 
   const handleSendOTP = async () => {
-    if (!phoneNumber) {
-      Alert.alert("Error", "Please enter your phone number");
+    if (!phone) {
+      setValidationError("Please enter your phone number");
       return;
     }
 
-    if (phoneNumber.length < 10) {
-      Alert.alert("Error", "Please enter a valid phone number");
+    if (phone.length !== 10) {
+      setValidationError("Please enter a valid phone number");
       return;
     }
 
@@ -47,12 +50,34 @@ export default function LoginScreen() {
 
     // Simulate API call to send OTP
     try {
-      await dispatch(adminLogin({ phone: phoneNumber }));
+      if (screenName === ScreenName.SIGNUP) {
+        console.log(phone);
+        const result = await dispatch(gymSignup(phone)).unwrap();
+        console.log("SIGNUP RESULT ", result);
+        router.replace({
+          pathname: "/otp",
+          params: {
+            phoneNumber: phone,
+            gymId: result.data.gymId,
+          },
+        });
+      } else {
+        console.log(phone);
+        const result = await dispatch(gymLogin(phone)).unwrap();
+        console.log("LOGIN RESULT ", result);
+        router.replace({
+          pathname: "/otp",
+          params: {
+            phoneNumber: phone,
+            gymId: result.data.gymId,
+          },
+        });
+      }
+      // await dispatch(adminLogin({ phone: phoneNumber }));
 
-      router.push({
-        pathname: "/(auth)/otp",
-        params: { phoneNumber, staffId: loginResponse?.staffId },
-      });
+      // router.push({
+      //   pathname: "/(auth)/otp",
+      // });
     } catch (error: any) {
       toast.error(error ?? "Failed to send OTP. Please try again.");
     } finally {
@@ -66,31 +91,56 @@ export default function LoginScreen() {
       style={styles.container}
     >
       <View style={styles.content}>
-        <Text style={styles.title}>Welcome Back</Text>
-        <Text style={styles.subtitle}>Enter your phone number to continue</Text>
-
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Phone Number</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter your phone number"
-            placeholderTextColor="#9CA3AF"
-            keyboardType="phone-pad"
-            value={phoneNumber}
-            onChangeText={setPhoneNumber}
-            maxLength={10}
-          />
-        </View>
-
-        <TouchableOpacity
-          style={[styles.button, isLoading && styles.buttonDisabled]}
-          onPress={handleSendOTP}
-          disabled={isLoading}
-        >
-          <Text style={styles.buttonText}>
-            {isLoading ? "Sending OTP..." : "Send OTP"}
+        <View>
+          <Text style={styles.title}>
+            {screenName === ScreenName.LOGIN
+              ? "Welcome Back"
+              : "Create an account"}
           </Text>
-        </TouchableOpacity>
+          <Text style={styles.subtitle}>
+            Enter your phone number to continue
+          </Text>
+
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={[styles.input, validationError && { borderColor: "red" }]}
+              placeholder="Enter your phone number"
+              placeholderTextColor={validationError ? "red" : "#9CA3AF"}
+              keyboardType="phone-pad"
+              value={phone}
+              onChangeText={setPhoneNumber}
+              maxLength={10}
+            />
+            <Text style={styles.validationError}>{validationError}</Text>
+          </View>
+        </View>
+        <View>
+          <TouchableOpacity
+            style={[styles.button, isLoading && styles.buttonDisabled]}
+            onPress={handleSendOTP}
+            disabled={isLoading}
+          >
+            <Text style={styles.buttonText}>
+              {isLoading ? "Sending OTP..." : "Continue"}
+            </Text>
+          </TouchableOpacity>
+          <Text
+            onPress={() =>
+              setScreenName(
+                screenName === "login" ? ScreenName.SIGNUP : ScreenName.LOGIN
+              )
+            }
+            style={[styles.subtitle, styles.linkText]}
+          >
+            {screenName === ScreenName.LOGIN
+              ? "Don't have an account"
+              : "Already have an account"}
+            ?{" "}
+            <Text style={styles.screenName}>
+              {screenName === ScreenName.LOGIN ? "SignUp" : "SignIn"}
+            </Text>
+          </Text>
+        </View>
       </View>
     </KeyboardAvoidingView>
   );
@@ -104,20 +154,20 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: 24,
-    justifyContent: "center",
+    justifyContent: "space-between",
   },
   title: {
     fontSize: 28,
-    fontWeight: "700",
+    fontWeight: "400",
     color: "#111827",
     marginBottom: 8,
-    textAlign: "center",
+    // textAlign: "center",
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: "#6B7280",
-    textAlign: "center",
-    marginBottom: 40,
+    // textAlign: "center",
+    marginBottom: 12,
   },
   inputContainer: {
     marginBottom: 24,
@@ -137,12 +187,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#111827",
   },
+
+  validationError: { color: "red", marginLeft: 5, marginTop: 2 },
   button: {
     backgroundColor: "#4264FB",
     borderRadius: 12,
     padding: 16,
     alignItems: "center",
-    marginBottom: 24,
   },
   buttonDisabled: {
     backgroundColor: "#9CA3AF",
@@ -158,4 +209,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 18,
   },
+  linkText: { marginVertical: 10, textAlign: "center" },
+  screenName: { color: AppColor.primary, fontWeight: "bold" },
 });

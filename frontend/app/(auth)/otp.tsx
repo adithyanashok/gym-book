@@ -17,9 +17,11 @@ import {
   selectAdmin,
   selectAdminLoading,
   selectLoginResponse,
-  verifyOtp,
 } from "@/store/slices/adminSlice";
 import { useToast } from "@/hooks/useToasts";
+import { gymLogin, gymSignup, verifyOtp } from "@/store/slices/gymSlice";
+import { OtpData } from "@/types/gym.type";
+import { gymApi } from "@/services/gymApi";
 
 export default function OTPScreen() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -31,14 +33,10 @@ export default function OTPScreen() {
   const loginResponse = useSelector(selectLoginResponse);
   const loading = useSelector(selectAdminLoading);
 
-  const { phoneNumber, staffId } = useLocalSearchParams<{
+  const { phoneNumber, gymId } = useLocalSearchParams<{
     phoneNumber: string;
-    staffId: string;
+    gymId: string;
   }>();
-
-  if (admin) {
-    router.replace("/(tabs)");
-  }
 
   const handleOtpChange = (text: string, index: number) => {
     const newOtp = [...otp];
@@ -74,13 +72,14 @@ export default function OTPScreen() {
     }
 
     try {
-      const id = Number(staffId);
-      dispatch(
-        verifyOtp({
-          otp: parseInt(otpCode),
-          staffId: loginResponse?.staffId ?? id,
-        })
-      );
+      const otp = parseInt(otpCode);
+      const id = parseInt(gymId);
+      const result = await dispatch(verifyOtp({ otp, gymId: id })).unwrap();
+      if (!result.data.isDetailComplete) {
+        router.navigate("/create-gym");
+      } else {
+        router.replace("/(tabs)");
+      }
     } catch (error) {
       toast.error(
         (error as string) ?? "Something went wrong. Please try again."
@@ -90,8 +89,14 @@ export default function OTPScreen() {
 
   const handleResendOTP = async () => {
     setCountdown(60);
-    await dispatch(adminLogin({ phone: phoneNumber }));
-    toast.success("OTP Sent, New OTP has been sent to your phone");
+    try {
+      await dispatch(gymLogin(phoneNumber)).unwrap();
+      toast.success("OTP Sent, New OTP has been sent to your phone");
+    } catch (error) {
+      toast.error(
+        (error as string) ?? "Something went wrong. Please try again."
+      );
+    }
   };
 
   React.useEffect(() => {

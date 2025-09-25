@@ -64,10 +64,11 @@ export class PlanService {
   }
 
   // Get plans
-  public async getPlans(): Promise<ApiResponse<Plan[]>> {
+  public async getPlans(gymId: number): Promise<ApiResponse<Plan[]>> {
+    console.log(gymId);
     try {
       // Get Plan
-      const plans = await this.planRepository.find();
+      const plans = await this.planRepository.find({ where: { gym: { id: gymId } } });
 
       // Return response
       return new ApiResponse(true, 'Successfull Fetched!', plans);

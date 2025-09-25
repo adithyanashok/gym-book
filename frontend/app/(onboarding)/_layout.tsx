@@ -5,7 +5,7 @@ import { Stack } from "expo-router";
 const OnboardingLayout = () => {
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="create-gym" />
+      <Stack.Screen name="index" />
     </Stack>
   );
 };

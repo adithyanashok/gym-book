@@ -12,11 +12,15 @@ import { router } from "expo-router";
 import SvgUri from "expo-svg-uri";
 import FeatureCard from "./components/FeatureCard";
 import Footer from "./components/Footer";
+import { ScreenName } from "@/types/screen-name.type";
 const { width, height } = Dimensions.get("window");
 
 export default function OnboardingScreen() {
   const handleGetStarted = () => {
-    router.replace("/(auth)");
+    router.replace({
+      pathname: "/(auth)",
+      params: { screenName: ScreenName.SIGNUP },
+    });
   };
 
   return (
@@ -68,7 +72,7 @@ export default function OnboardingScreen() {
       </View>
 
       {/* Footer */}
-      <Footer handleGetStarted={() => {}} />
+      <Footer handleGetStarted={handleGetStarted} />
     </View>
   );
 }
