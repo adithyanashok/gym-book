@@ -13,14 +13,16 @@ export class GetRevanueByDateProvider {
     private readonly membershipRepository: Repository<Membership>,
   ) {}
   public async get(start: Date, end: Date, gymId: number) {
-    console.log(start);
-    console.log(end);
     // Query members created within date range
     const membership = await this.membershipRepository
       .createQueryBuilder('membership')
       .leftJoinAndSelect('membership.gym', 'gym')
-      .where('membership.gymId = :gymId', { gymId })
-      .where('membership.createdAt BETWEEN :start AND :end', { start, end })
+      .where('membership.createdAt BETWEEN :start AND :end AND membership.gymId = :gymId', {
+        start,
+        end,
+        gymId,
+      })
+      // .where('membership.gymId = :gymId', { gymId })
       .orderBy('membership.createdAt', 'ASC')
       .getMany();
 

@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Req } from '@nestjs/common';
 import { MembershipService } from './membership.service';
 import { RenewMembershipDto } from './dtos/renew-membership.dto';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import type { AuthenticatedRequest } from 'src/common/request/request';
 
 @Controller('membership')
 export class MembershipController {
@@ -12,7 +13,7 @@ export class MembershipController {
     private readonly membershipService: MembershipService,
   ) {}
 
-  @Patch('/renew/:id')
+  @Patch('/renew')
   @ApiOperation({ summary: 'Renew membership' })
   @ApiResponse({
     status: 200,
@@ -20,10 +21,11 @@ export class MembershipController {
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   public async updatePlan(
-    @Param('id', ParseIntPipe) id: number,
+    @Req() req: AuthenticatedRequest,
     @Body() renewMembershipDto: RenewMembershipDto,
   ) {
-    return await this.membershipService.renew(id, renewMembershipDto);
+    console.log(renewMembershipDto);
+    return await this.membershipService.renew(req.user['sub'], renewMembershipDto);
   }
 
   @Get('/:id')

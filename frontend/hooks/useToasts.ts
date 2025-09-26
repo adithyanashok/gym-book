@@ -7,8 +7,8 @@ export const useToast = () => {
     success: (message: string, duration?: number) => {
       showSnackbar(message, "success", duration);
     },
-    error: (message: string, duration?: number) => {
-      showSnackbar(message, "error", duration);
+    error: (message: any, duration?: number) => {
+      showSnackbar(message ?? "Error Occured", "error", duration);
     },
     info: (message: string, duration?: number) => {
       showSnackbar(message, "info", duration);

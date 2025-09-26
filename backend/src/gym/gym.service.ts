@@ -218,6 +218,21 @@ export class GymService {
     }
   }
 
+  public async getGym(id: number) {
+    try {
+      const gym = await this.gymRepository.findOne({ where: { id: id }, relations: ['plans'] });
+
+      if (!gym) {
+        throw new NotFoundException('Gym Not Found');
+      }
+
+      return new ApiResponse(true, 'Gym Fetched successfully', gym);
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
   generateOTP(phone: string): string {
     const digits = '1234567890';
     let otp = '';

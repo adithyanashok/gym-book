@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, ParseIntPipe, Patch, Query, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, ParseIntPipe, Patch, Query, Req } from '@nestjs/common';
 import { GymService } from './gym.service';
 import { AddGymDto } from './dtos/add-gym.dto';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
@@ -27,7 +27,6 @@ export class GymController {
     return await this.gymService.addGym(req.user['sub'], addGymDto);
   }
 
-  @Public()
   @Delete()
   @ApiOperation({ summary: 'Delete gym' })
   @ApiResponse({
@@ -38,5 +37,16 @@ export class GymController {
   @ApiResponse({ status: 404, description: 'Gym not found.' })
   public async delete(@Query('id', ParseIntPipe) id: number) {
     return await this.gymService.delete(id);
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'Get gym' })
+  @ApiResponse({
+    status: 200,
+    description: 'Gym Fetched Successfully',
+  })
+  @ApiResponse({ status: 404, description: 'Gym not found.' })
+  public async get(@Req() req: AuthenticatedRequest) {
+    return await this.gymService.getGym(req.user['sub']);
   }
 }

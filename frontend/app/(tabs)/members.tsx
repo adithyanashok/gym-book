@@ -47,66 +47,68 @@ export default function Members() {
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
-      <StatusBar barStyle="dark-content" />
+      <>
+        {/* <StatusBar barStyle="dark-content" /> */}
 
-      {/* Header - Fixed */}
-      <Header />
+        {/* Header - Fixed */}
+        <Header />
 
-      {/* Scrollable Content */}
-      <ScrollView
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-        stickyHeaderIndices={[1]}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            colors={["#0000FF"]}
-            tintColor="#0000ff"
-          />
-        }
-      >
-        {/* Search Bar */}
-        <SearchBar />
-
-        {/* Quick Filters - Sticky when scrolling */}
-        <View style={styles.stickySection}>
-          <FilterBar
-            activeFilter={activeFilter}
-            onFilterChange={setActiveFilter}
-            filters={plans}
-          />
-
-          {/* Results Count */}
-          <View style={styles.resultsContainer}>
-            <Text style={styles.resultsText}>
-              {members.length} {members.length === 1 ? "member" : "members"}{" "}
-              found
-            </Text>
-          </View>
-        </View>
-
-        {/* Members List */}
-        {members.length > 0 ? (
-          <View style={styles.membersListContainer}>
-            {members.map((item) => (
-              <MemberCardTile key={item.id} member={item} />
-            ))}
-          </View>
-        ) : (
-          <View style={styles.emptyState}>
-            <MaterialCommunityIcons
-              name="account-search"
-              size={64}
-              color="#E5E7EB"
+        {/* Scrollable Content */}
+        <ScrollView
+          style={styles.scrollView}
+          showsVerticalScrollIndicator={false}
+          stickyHeaderIndices={[1]}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={["#0000FF"]}
+              tintColor="#0000ff"
             />
-            <Text style={styles.emptyStateTitle}>No members found</Text>
-            <Text style={styles.emptyStateText}>
-              Try adjusting your search or filters
-            </Text>
+          }
+        >
+          {/* Search Bar */}
+          <SearchBar />
+
+          {/* Quick Filters - Sticky when scrolling */}
+          <View style={styles.stickySection}>
+            <FilterBar
+              activeFilter={activeFilter}
+              onFilterChange={setActiveFilter}
+              filters={plans}
+            />
+
+            {/* Results Count */}
+            <View style={styles.resultsContainer}>
+              <Text style={styles.resultsText}>
+                {members.length} {members.length === 1 ? "member" : "members"}{" "}
+                found
+              </Text>
+            </View>
           </View>
-        )}
-      </ScrollView>
+
+          {/* Members List */}
+          {members.length > 0 ? (
+            <View style={styles.membersListContainer}>
+              {members.map((item) => (
+                <MemberCardTile key={item.id} member={item} />
+              ))}
+            </View>
+          ) : (
+            <View style={styles.emptyState}>
+              <MaterialCommunityIcons
+                name="account-search"
+                size={64}
+                color="#E5E7EB"
+              />
+              <Text style={styles.emptyStateTitle}>No members found</Text>
+              <Text style={styles.emptyStateText}>
+                Try adjusting your search or filters
+              </Text>
+            </View>
+          )}
+        </ScrollView>
+      </>
     </SafeAreaView>
   );
 }
@@ -139,6 +141,7 @@ const styles = StyleSheet.create({
     color: "#6B7280",
   },
   membersListContainer: {
+    marginTop: 10,
     paddingHorizontal: 16,
     paddingBottom: 20,
   },

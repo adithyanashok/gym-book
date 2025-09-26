@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet } from "react-native";
 import React from "react";
 import { Ionicons } from "@expo/vector-icons";
+import InfoCard from "@/components/InfoCard";
 type Props = {
   member: any;
 };
@@ -9,35 +10,23 @@ const ContactInformation = ({ member }: Props) => {
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>Contact Information</Text>
 
-      <View style={styles.infoRow}>
-        <View style={styles.infoIcon}>
-          <Ionicons name="call" size={20} color="#6B7280" />
-        </View>
-        <View style={styles.infoContent}>
-          <Text style={styles.infoLabel}>Phone</Text>
-          <Text style={styles.infoValue}>{member.phone}</Text>
-        </View>
-      </View>
+      <InfoCard
+        icon={<Ionicons name="call" size={20} color="#6B7280" />}
+        label="Phone"
+        value={member.phone}
+      />
 
-      <View style={styles.infoRow}>
-        <View style={styles.infoIcon}>
-          <Ionicons name="mail" size={20} color="#6B7280" />
-        </View>
-        <View style={styles.infoContent}>
-          <Text style={styles.infoLabel}>Email</Text>
-          <Text style={styles.infoValue}>{member.email}</Text>
-        </View>
-      </View>
+      <InfoCard
+        icon={<Ionicons name="mail" size={20} color="#6B7280" />}
+        label="Email"
+        value={member.email}
+      />
 
-      <View style={styles.infoRow}>
-        <View style={styles.infoIcon}>
-          <Ionicons name="location" size={20} color="#6B7280" />
-        </View>
-        <View style={styles.infoContent}>
-          <Text style={styles.infoLabel}>Address</Text>
-          <Text style={styles.infoValue}>{member.address}</Text>
-        </View>
-      </View>
+      <InfoCard
+        icon={<Ionicons name="location" size={20} color="#6B7280" />}
+        label="Address"
+        value={member.address}
+      />
     </View>
   );
 };

@@ -25,7 +25,7 @@ const Snackbar: React.FC<SnackbarProps> = ({ message, type, onHide }) => {
   React.useEffect(() => {
     // Slide in animation
     Animated.timing(translateY, {
-      toValue: 50,
+      toValue: 26,
       duration: 300,
       useNativeDriver: true,
     }).start();
@@ -40,7 +40,7 @@ const Snackbar: React.FC<SnackbarProps> = ({ message, type, onHide }) => {
 
   const hideSnackbar = () => {
     Animated.timing(translateY, {
-      toValue: 100,
+      toValue: 1,
       duration: 300,
       useNativeDriver: true,
     }).start(() => {
@@ -109,6 +109,7 @@ const styles = StyleSheet.create({
     right: 0,
     zIndex: 1000,
     padding: 16,
+    // height: 100,
   },
   content: {
     flexDirection: "row",

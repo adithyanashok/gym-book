@@ -83,6 +83,8 @@ export class StatisticsService {
       // Prev Month Data
       const prevData = prevRevenueRaw.monthlyRevenues[0];
       const prevMonthRevenue = prevData?.revanue ?? 0;
+      console.log(prevMonthStart);
+      console.log(prevMonthEnd);
 
       const activeMembers = members.filter(
         (member) => this.getExpiresInProvider.getDaysUntilExpiration(member.endDate) > 0,

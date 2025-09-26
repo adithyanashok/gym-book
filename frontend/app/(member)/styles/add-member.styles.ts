@@ -36,6 +36,7 @@ const addMemberStyle = StyleSheet.create({
     padding: 20,
     marginHorizontal: 16,
     marginBottom: 16,
+    marginTop: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -135,10 +136,8 @@ const addMemberStyle = StyleSheet.create({
     fontWeight: "600",
   },
   imageContainer: {
- 
     position: "relative",
-    alignItems:'center'
-    
+    alignItems: "center",
   },
   memberImage: {
     width: 80,
@@ -148,41 +147,41 @@ const addMemberStyle = StyleSheet.create({
     borderColor: "#f3f4f6",
   },
   cameraIcon: {
-    position: 'absolute',
+    position: "absolute",
     right: 0,
     bottom: 0,
-    backgroundColor: '#4264FB',
+    backgroundColor: "#4264FB",
     borderRadius: 15,
     padding: 4,
   },
   modalContainer: {
     flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    backgroundColor: '#FFF',
+    backgroundColor: "#FFF",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     // marginBottom: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   modalOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
+    borderBottomColor: "#F0F0F0",
   },
   modalOptionText: {
     marginLeft: 16,
     fontSize: 16,
-    color: '#1A1A1A',
+    color: "#1A1A1A",
   },
   removeOption: {
     marginTop: 10,
@@ -190,12 +189,12 @@ const addMemberStyle = StyleSheet.create({
   modalCancel: {
     marginTop: 20,
     padding: 16,
-    alignItems: 'center',
+    alignItems: "center",
   },
   modalCancelText: {
     fontSize: 16,
-    color: '#4264FB',
-    fontWeight: 'bold',
+    color: "#4264FB",
+    fontWeight: "bold",
   },
 });
 export default addMemberStyle;

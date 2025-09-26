@@ -181,7 +181,7 @@ export class PlanService {
   // }
 
   // Get plan distribution
-  public async getPlanDistribution(dateRangeDto: GetByDateDto) {
+  public async getPlanDistribution(gymId: number, dateRangeDto: GetByDateDto) {
     try {
       const { startDate } = dateRangeDto;
 
@@ -189,16 +189,21 @@ export class PlanService {
       const end = addMonths(start, 1);
       end.setHours(23, 59, 59, 999);
 
-      const userPlans = await this.userPlanRepository
-        .createQueryBuilder('userPlan')
-        .where('userPlan.createdAt BETWEEN :start AND :end', { start, end })
-        .leftJoinAndSelect('userPlan.plan', 'plan')
-        .orderBy('userPlan.createdAt', 'ASC')
+      const memberships = await this.memberRepository
+        .createQueryBuilder('membership')
+        .leftJoinAndSelect('membership.gym', 'gym')
+        .where('membership.createdAt BETWEEN :start AND :end AND membership.gymId = :gymId ', {
+          start,
+          end,
+          gymId,
+        })
+        .leftJoinAndSelect('membership.plan', 'plan')
+        .orderBy('membership.createdAt', 'ASC')
         .getMany();
 
-      console.log(userPlans);
+      console.log(memberships);
 
-      const plansCount = userPlans.reduce((prev, curr) => {
+      const plansCount = memberships.reduce((prev, curr) => {
         if (!prev[curr.plan.name]) {
           prev[curr.plan.name] = 0;
         }

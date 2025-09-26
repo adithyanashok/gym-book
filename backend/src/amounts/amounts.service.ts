@@ -17,10 +17,8 @@ export class AmountsService {
   public async addAmount(amount: Plan) {
     try {
       const createdAmount = this.amountsRepository.create(amount);
-      console.log(createdAmount);
       await this.amountsRepository.save(createdAmount);
     } catch (error) {
-      console.log(error);
       throw new BadRequestException(error);
     }
   }

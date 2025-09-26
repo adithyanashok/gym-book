@@ -1,16 +1,18 @@
 // store/store.ts
-import { combineSlices, configureStore } from '@reduxjs/toolkit';
-import membersReducer from './slices/membersSlice';
-import plansReducer from './slices/plansSlice';
-import statisticsReducer from './slices/statisticsSlice';
-import adminReducer from './slices/adminSlice'
+import { combineSlices, configureStore } from "@reduxjs/toolkit";
+import membersReducer from "./slices/membersSlice";
+import plansReducer from "./slices/plansSlice";
+import statisticsReducer from "./slices/statisticsSlice";
+import adminReducer from "./slices/adminSlice";
+import gymSlice from "./slices/gymSlice";
 
 export const store = configureStore({
   reducer: {
     members: membersReducer,
     plans: plansReducer,
-    statistics:statisticsReducer,
-    admin:adminReducer,
+    statistics: statisticsReducer,
+    admin: adminReducer,
+    gym: gymSlice,
   },
 });
 

@@ -76,7 +76,7 @@ export default function OTPScreen() {
       const id = parseInt(gymId);
       const result = await dispatch(verifyOtp({ otp, gymId: id })).unwrap();
       if (!result.data.isDetailComplete) {
-        router.navigate("/create-gym");
+        router.replace("/create-gym");
       } else {
         router.replace("/(tabs)");
       }

@@ -5,6 +5,7 @@ import RenewMembership from "../renew-membership";
 import { Member } from "@/types/member.types";
 import { selectMember } from "@/store/slices/membersSlice";
 import { useSelector } from "react-redux";
+import InfoCard from "@/components/InfoCard";
 type Props = {
   member: Member;
 };
@@ -17,46 +18,30 @@ const MemberInfo = () => {
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>Membership Information</Text>
-      <View style={styles.infoRow}>
-        <View style={styles.infoIcon}>
+      <InfoCard
+        icon={
           <MaterialCommunityIcons name="calendar" size={20} color="#6B7280" />
-        </View>
-        <View style={styles.infoContent}>
-          <Text style={styles.infoLabel}>Current Plan</Text>
-          <Text style={styles.infoValue}>{member.plan.name}</Text>
-        </View>
-      </View>
-      <View style={styles.infoRow}>
-        <View style={styles.infoIcon}>
-          <MaterialCommunityIcons name="clock" size={20} color="#6B7280" />
-        </View>
-        <View style={styles.infoContent}>
-          <Text style={styles.infoLabel}>Expires In</Text>
-          <Text
-            style={[
-              styles.infoValue,
-              member.expiresIn < 7 ? styles.expiringSoon : null,
-            ]}
-          >
-            {member.expiresIn}
-          </Text>
-        </View>
-      </View>
-      <View style={styles.infoRow}>
-        <View style={styles.infoIcon}>
+        }
+        label="Current Plan"
+        value={member.plan.name}
+      />
+      <InfoCard
+        icon={<MaterialCommunityIcons name="clock" size={20} color="#6B7280" />}
+        label="Expires In"
+        value={member.expiresIn}
+        valueStyle={member.expiresIn < 7 ? styles.expiringSoon : null}
+      />
+      <InfoCard
+        icon={
           <MaterialCommunityIcons
             name="calendar-check"
             size={20}
             color="#6B7280"
           />
-        </View>
-        <View style={styles.infoContent}>
-          <Text style={styles.infoLabel}>Join Date</Text>
-          <Text style={styles.infoValue}>
-            {new Date(member.createdAt).toLocaleDateString()}
-          </Text>
-        </View>
-      </View>
+        }
+        label="Join Date"
+        value={new Date(member.createdAt).toLocaleDateString()}
+      />
 
       {showRenewModal && (
         <Modal visible={showRenewModal} animationType="slide">
@@ -98,32 +83,7 @@ const styles = StyleSheet.create({
     color: "#111827",
     marginBottom: 16,
   },
-  infoRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  infoIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: "#F3F4F6",
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-  infoContent: {
-    flex: 1,
-  },
-  infoLabel: {
-    fontSize: 14,
-    color: "#6B7280",
-    marginBottom: 2,
-  },
-  infoValue: {
-    fontSize: 16,
-    color: "#111827",
-  },
+
   expiringSoon: {
     color: "#EF4444",
     fontWeight: "600",

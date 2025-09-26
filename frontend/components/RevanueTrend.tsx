@@ -20,8 +20,6 @@ const RevenueTrendChart = () => {
     return <Error error="Error" errorText="Something went wrong..." />;
   }
 
-  console.log(revanues);
-
   return (
     <View style={styles.chartContainer}>
       <View style={styles.sectionHeader}>

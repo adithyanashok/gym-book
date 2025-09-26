@@ -4,8 +4,9 @@ import { STORAGE } from "@/utils/storage";
 
 const API_BASE_URL =
   Platform.OS === "android"
-    ? "http://10.0.2.2:3000" // Android emulator
-    : "http://localhost:3000"; // iOS simulator
+    ? "http://192.168.1.100:3000"
+    : // ? "http://10.0.2.2:3000"
+      "http://localhost:3000"; // iOS simulator
 
 // Create axios instance with default config
 const axiosInstance: AxiosInstance = axios.create({

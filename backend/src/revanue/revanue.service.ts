@@ -47,7 +47,7 @@ export class RevanueService {
       const endOfYear = new Date(year, 11, 31);
 
       const data = await this.getRevanueByDateProvider.get(startOfYear, endOfYear, gymId);
-
+      console.log('REVANUES ', data);
       return new ApiResponse(true, 'Successfully Fetched', data);
     } catch (error) {
       console.log(error);

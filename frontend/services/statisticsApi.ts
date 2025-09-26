@@ -4,15 +4,36 @@ import { apiClient } from "./apiClient";
 import { PlanDistribution } from "@/types/planDistribution.type";
 
 export const statisticsApi = {
-  getStatistics: ({ startDate }: { startDate: string }): Promise<ApiResponse<Statistics>> => {
-    return apiClient<ApiResponse<Statistics>>(`/statistics?startDate=${startDate}`);
+  getStatistics: async ({ startDate }: { startDate: string }) => {
+    try {
+      const response = await apiClient.get<ApiResponse<Statistics>>(
+        `/statistics?startDate=${startDate}`
+      );
+      return response;
+    } catch (error) {
+      throw error;
+    }
   },
 
-  getPlanDistribution: ({ startDate }: { startDate: string }): Promise<ApiResponse<PlanDistribution[]>> => {
-    return apiClient<ApiResponse<PlanDistribution[]>>(`/plans/get-plan-distribution?startDate=${startDate}`);
+  getPlanDistribution: async ({ startDate }: { startDate: string }) => {
+    try {
+      const response = await apiClient.get<ApiResponse<PlanDistribution[]>>(
+        `/plans/get-plan-distribution?startDate=${startDate}`
+      );
+      return response;
+    } catch (error) {
+      throw error;
+    }
   },
 
-   getMonthlyRevanues: ({ startDate }: { startDate: string }): Promise<ApiResponse<RevanueData>> => {
-    return apiClient<ApiResponse<RevanueData>>(`/revanue?startDate=${startDate}`);
+  getMonthlyRevanues: async ({ startDate }: { startDate: string }) => {
+    try {
+      const response = await apiClient.get<ApiResponse<RevanueData>>(
+        `/revanue?startDate=${startDate}`
+      );
+      return response;
+    } catch (error) {
+      throw error;
+    }
   },
-}
+};

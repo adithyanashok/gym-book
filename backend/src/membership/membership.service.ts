@@ -10,6 +10,7 @@ import { PlanService } from 'src/plans/plan.service';
 import { UpdateEndDateProvider } from 'src/common/providers/update-end-date.provider';
 import { ApiResponse } from 'src/common/dtos/api-response.dto';
 import { GymService } from 'src/gym/gym.service';
+import { GetExpiration } from 'src/common/providers/get-expiresin.providers';
 
 @Injectable()
 export class MembershipService {
@@ -34,6 +35,11 @@ export class MembershipService {
      * Injecting gymService
      */
     private readonly gymService: GymService,
+
+    /**
+     * Injecting getExpiresInProvider
+     */
+    private readonly getExpiresInProvider: GetExpiration,
   ) {}
 
   public async create(createMembershipDto: CreateMembershipDto) {
@@ -65,6 +71,8 @@ export class MembershipService {
   public async renew(gymId: number, renewMembershipDto: RenewMembershipDto) {
     try {
       const { memberId, planId, startDate } = renewMembershipDto;
+      console.log(renewMembershipDto);
+      console.log(gymId);
       // Find the member first
       const member = await this.memberRepository.findOne({
         where: { id: memberId },
@@ -103,8 +111,11 @@ export class MembershipService {
         startDate: startDate,
         gym: gym,
       });
+      const expiresIn = this.getExpiresInProvider.getDaysUntilExpiration(renewedMember.endDate);
 
-      return new ApiResponse(true, 'Membership Renewed!', renewedMember);
+      const status = expiresIn <= 0 ? 'expired' : 'active';
+
+      return new ApiResponse(true, 'Membership Renewed!', { ...renewedMember, status, expiresIn });
     } catch (error) {
       console.log(error);
       throw error;

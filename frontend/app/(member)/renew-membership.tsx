@@ -17,6 +17,7 @@ import { selectedPlans } from "@/store/slices/plansSlice";
 import { Plan } from "@/types/plan.types";
 import { AppDispatch } from "@/store/store";
 import { renewMemberPlan } from "@/store/slices/membersSlice";
+import { useToast } from "@/hooks/useToasts";
 
 interface RenewMembershipProps {
   member: { id: number; name: string };
@@ -29,42 +30,30 @@ export default function RenewMembership({
   onClose,
   onRenew,
 }: RenewMembershipProps) {
+  const toast = useToast();
   const dispatch = useDispatch<AppDispatch>();
   const plans = useSelector(selectedPlans);
   const [selectedPlan, setSelectedPlan] = useState(plans[0].id);
   const [startDate, setStartDate] = useState(new Date());
 
-  const handleRenew = () => {
+  const handleRenew = async () => {
     const plan = plans.find((p) => p.id === selectedPlan);
     if (!plan) return;
 
     const renewalData = {
-      id: member.id,
+      memberId: member.id,
       planId: plan.id,
       startDate: startDate,
     };
-
-    const data = dispatch(renewMemberPlan(renewalData));
-
-    data
-      .then((e) => {
-        Alert.alert(
-          "Success",
-          `Membership renewed successfully for ${member.name}!`,
-          [
-            {
-              text: "OK",
-              onPress: () => {
-                onRenew?.(renewalData);
-                onClose?.();
-              },
-            },
-          ]
-        );
-      })
-      .catch((e) => {
-        console.log(e);
-      });
+    console.log(renewalData);
+    try {
+      const data = await dispatch(renewMemberPlan(renewalData)).unwrap();
+      toast.success(data.message);
+      onRenew?.(renewalData);
+      onClose?.();
+    } catch (error) {
+      toast.error(error);
+    }
   };
 
   const calculateEndDate = () => {
@@ -108,7 +97,10 @@ export default function RenewMembership({
           />
         </View>
         <Text style={styles.planName}>{plan.name}</Text>
-        <Text style={styles.planPrice}>₹{plan.amount}</Text>
+        <View>
+          <Text style={styles.planPrice}>₹{plan.amount}</Text>
+          <Text style={styles.planDuration}>{plan.duration} Month</Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -210,6 +202,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: "#111827",
   },
+
   planPrice: {
     fontSize: 16,
     fontWeight: "700",

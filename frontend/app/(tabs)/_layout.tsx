@@ -3,6 +3,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Feather from "@expo/vector-icons/Feather";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Tabs } from "expo-router";
+import { Text } from "react-native";
 export default function TabLayout() {
   return (
     <Tabs
@@ -14,8 +15,11 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          headerShown: false,
-          title: "Home",
+          headerShown: true,
+
+          headerTitleAlign: "center",
+
+          title: "Fit Hub",
           tabBarIcon: ({ focused, color, size }) => (
             <Feather name="home" size={24} color={color} />
           ),

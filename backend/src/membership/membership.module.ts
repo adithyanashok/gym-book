@@ -7,10 +7,11 @@ import { Member } from 'src/members/entities/member.entity';
 import { UpdateEndDateProvider } from 'src/common/providers/update-end-date.provider';
 import { PlanModule } from 'src/plans/plan.module';
 import { GymModule } from 'src/gym/gym.module';
+import { GetExpiration } from 'src/common/providers/get-expiresin.providers';
 
 @Module({
   controllers: [MembershipController],
-  providers: [MembershipService, UpdateEndDateProvider],
+  providers: [MembershipService, UpdateEndDateProvider, GetExpiration],
   imports: [TypeOrmModule.forFeature([Membership, Member]), PlanModule, GymModule],
   exports: [MembershipService],
 })

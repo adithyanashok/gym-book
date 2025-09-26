@@ -90,19 +90,19 @@ export class MembersController {
   }
 
   // Renew Member Plan
-  @Patch('/renew/:id')
-  @ApiOperation({ summary: 'Renew member plan' })
-  @ApiResponse({
-    status: 200,
-    description: 'Successfully Updated',
-  })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
-  public async updatePlan(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() updateMemberPlanDto: UpdateMemberPlanDto,
-  ) {
-    return await this.membersService.updatePlan(id, updateMemberPlanDto);
-  }
+  // @Patch('/renew/:id')
+  // @ApiOperation({ summary: 'Renew member plan' })
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'Successfully Updated',
+  // })
+  // @ApiResponse({ status: 400, description: 'Bad Request.' })
+  // public async updatePlan(
+  //   @Param('id', ParseIntPipe) id: number,
+  //   @Body() updateMemberPlanDto: UpdateMemberPlanDto,
+  // ) {
+  //   return await this.membersService.updatePlan(id, updateMemberPlanDto);
+  // }
 
   // Get plan by current plan
   @Get('/plan/:planId')

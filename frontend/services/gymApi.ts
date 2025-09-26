@@ -67,4 +67,17 @@ export const gymApi = {
       throw error;
     }
   },
+
+  getGym: async () => {
+    try {
+      const response = await apiClient.get<ApiResponse<Gym>>("/gym");
+
+      console.log("Get Gym Details success:", response);
+      return response;
+    } catch (error: any) {
+      console.log(" Get Gym Details error:", error);
+
+      throw error;
+    }
+  },
 };

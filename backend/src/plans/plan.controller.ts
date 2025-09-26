@@ -63,7 +63,10 @@ export class PlansController {
   @Get('/get-plan-distribution')
   @ApiOperation({ summary: 'Get plan distribution' })
   @ApiResponse({ status: 200, description: 'Retrieved successfully' })
-  public async getPlanDistribution(@Query() dateRangeDto: GetByDateDto) {
-    return await this.planService.getPlanDistribution(dateRangeDto);
+  public async getPlanDistribution(
+    @Req() req: AuthenticatedRequest,
+    @Query() dateRangeDto: GetByDateDto,
+  ) {
+    return await this.planService.getPlanDistribution(req.user['sub'], dateRangeDto);
   }
 }

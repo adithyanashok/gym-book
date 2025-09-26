@@ -67,22 +67,24 @@ export const membersApi = {
   },
 
   renewMembership: async ({
-    id,
+    memberId,
     planId,
     startDate,
   }: {
-    id: number;
+    memberId: number;
     planId: number;
     startDate: Date;
-  }): Promise<ApiResponse<Member>> => {
+  }) => {
     try {
       const response = await apiClient.patch<ApiResponse<Member>>(
-        `/members/renew/${id}`,
+        `/membership/renew`,
         {
+          memberId,
           planId,
           startDate,
         }
       );
+      console.log("Membership: ", response);
       return response;
     } catch (error) {
       throw error;

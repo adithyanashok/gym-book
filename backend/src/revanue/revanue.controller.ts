@@ -12,7 +12,7 @@ export class RevanueController {
      */
     private readonly revanueService: RevanueService,
   ) {}
-  @Get('/:gymId')
+  @Get('/')
   @ApiOperation({ summary: 'Get revanue by date range' })
   @ApiResponse({ status: 200, description: 'revanue retrieved successfully' })
   @ApiResponse({ status: 400, description: 'Invalid date range' })

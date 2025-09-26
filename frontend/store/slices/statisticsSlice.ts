@@ -6,7 +6,8 @@ import { PlanDistribution } from "@/types/planDistribution.type";
 
 // Define the state interface
 interface StatisticsState {
-  items?: Statistics | null;
+  items: Statistics | null;
+  current: Statistics | null;
   planDistribution: PlanDistribution[];
   revanueData: RevanueData;
   statisticsLoading: "idle" | "pending" | "succeeded" | "failed";
@@ -18,6 +19,7 @@ interface StatisticsState {
 // Initial state
 const initialState: StatisticsState = {
   items: null,
+  current: null,
   planDistribution: [],
   revanueData: { monthlyRevenues: [], totalRevanue: 0 },
   statisticsLoading: "idle",
@@ -29,6 +31,20 @@ const initialState: StatisticsState = {
 interface GetStatisticsParams {
   startDate: string;
 }
+
+export const getOverview = createAsyncThunk<Statistics, GetStatisticsParams>(
+  "statistics/getOverview",
+  async ({ startDate }, { rejectWithValue }) => {
+    try {
+      const response = await statisticsApi.getStatistics({ startDate });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error instanceof Error ? error.message : "An unknown error occured"
+      );
+    }
+  }
+);
 
 export const getStatistics = createAsyncThunk<Statistics, GetStatisticsParams>(
   "statistics/getStatistics",
@@ -85,6 +101,22 @@ const statisticsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(getOverview.pending, (state) => {
+        state.statisticsLoading = "pending";
+        state.error = null;
+      })
+      .addCase(
+        getOverview.fulfilled,
+        (state, action: PayloadAction<Statistics>) => {
+          state.statisticsLoading = "succeeded";
+          state.error = null;
+          state.current = action.payload;
+        }
+      )
+      .addCase(getOverview.rejected, (state, action) => {
+        state.statisticsLoading = "failed";
+        state.error = action.payload as string;
+      })
       .addCase(getStatistics.pending, (state) => {
         state.statisticsLoading = "pending";
         state.error = null;
@@ -145,6 +177,8 @@ export const { clearError } = statisticsSlice.actions;
 
 // Selectors (useful for accessing state in components)
 export const selectedStatistics = (state: RootState) => state.statistics.items;
+export const selectedCurrentStatistics = (state: RootState) =>
+  state.statistics.current;
 export const selectStatisticsLoading = (state: RootState) =>
   state.statistics.statisticsLoading;
 export const selectStatisticsError = (state: RootState) =>

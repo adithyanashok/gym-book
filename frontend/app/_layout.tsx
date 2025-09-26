@@ -22,10 +22,10 @@ export default function RootLayout() {
         if (decodedToken.exp && decodedToken.exp > currentTime) {
           router.replace("/(tabs)");
         } else {
-          router.replace("/(auth)");
+          router.replace("/(onboarding)");
         }
       } catch (error) {
-        router.replace("/(auth)");
+        router.replace("/(onboarding)");
       }
     };
     checkUser();

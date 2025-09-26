@@ -1,43 +1,36 @@
 import { AppColor } from "@/constants/colors";
 import {
+  getOverview,
   getStatistics,
+  selectedCurrentStatistics,
   selectedStatistics,
 } from "@/store/slices/statisticsSlice";
 import { AppDispatch } from "@/store/store";
-import { shadowStyle } from "@/styles/box-shadow.styles";
 import { MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect } from "react";
-import { Dimensions, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { getCurrentMonthRange } from "../utils/dateUtils";
 
 const StatiCard = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const statistics = useSelector(selectedStatistics);
+  const statistics = useSelector(selectedCurrentStatistics);
 
   const { startDate } = getCurrentMonthRange();
 
   useEffect(() => {
-    dispatch(getStatistics({ startDate }));
+    dispatch(getOverview({ startDate }));
   }, [dispatch, startDate]);
 
   return (
     <View style={[styles.card]}>
-      {/* Header with gradient background */}
-      <LinearGradient
-        colors={[AppColor.primary, AppColor.secondary]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        style={styles.header}
-      >
+      {/* Header */}
+      <View style={styles.header}>
         <Text style={styles.selectedDateText}>
-          {statistics.currentMonthData?.currentMonth}
+          {statistics?.currentMonthData?.currentMonth}
         </Text>
-        <View style={styles.headerIcon}>
-          <MaterialIcons name="analytics" size={20} color="white" />
-        </View>
-      </LinearGradient>
+      </View>
 
       <View style={styles.detailsSection}>
         <View style={[styles.detailsCard]}>
@@ -46,36 +39,37 @@ const StatiCard = () => {
           </View>
           <Text style={styles.detailKeyText}>Members</Text>
           <Text style={styles.detailValueText}>
-            {statistics.currentMonthData?.newMembers}
+            {statistics?.currentMonthData?.newMembers}
           </Text>
+          {/* Members */}
           <View
             style={
-              statistics.currentMonthData?.memberIncrease > 0
+              statistics?.currentMonthData?.memberIncrease ?? 0 > 0
                 ? styles.trendContainer
                 : styles.trendDownContainer
             }
           >
             <MaterialIcons
               name={
-                statistics.currentMonthData?.memberIncrease > 0
+                statistics?.currentMonthData?.memberIncrease ?? 0 > 0
                   ? "arrow-upward"
                   : "arrow-downward"
               }
               size={12}
               color={
-                statistics.currentMonthData?.memberIncrease > 0
+                statistics?.currentMonthData?.memberIncrease ?? 0 > 0
                   ? "#4CAF50"
                   : "red"
               }
             />
             <Text
               style={
-                statistics.currentMonthData?.memberIncrease <= 0
-                  ? styles.trendDownText
-                  : styles.trendupText
+                statistics?.currentMonthData?.memberIncrease ?? 0 > 0
+                  ? styles.trendupText
+                  : styles.trendDownText
               }
             >
-              {statistics.currentMonthData?.memberIncrease}%
+              {statistics?.currentMonthData?.memberIncrease}%
             </Text>
           </View>
         </View>
@@ -90,36 +84,37 @@ const StatiCard = () => {
           </View>
           <Text style={styles.detailKeyText}>Revenue</Text>
           <Text style={styles.detailValueText}>
-            ${statistics.currentMonthData?.revenue}
+            ${statistics?.currentMonthData?.revenue}
           </Text>
+          {/* Revanue */}
           <View
             style={
-              statistics.currentMonthData?.memberIncrease > 0
+              statistics?.currentMonthData?.memberIncrease ?? 0 > 0
                 ? styles.trendContainer
                 : styles.trendDownContainer
             }
           >
             <MaterialIcons
               name={
-                statistics.currentMonthData?.memberIncrease > 0
+                statistics?.currentMonthData?.memberIncrease ?? 0 > 0
                   ? "arrow-upward"
                   : "arrow-downward"
               }
               size={12}
               color={
-                statistics.currentMonthData?.memberIncrease > 0
+                statistics?.currentMonthData?.memberIncrease ?? 0 > 0
                   ? "#4CAF50"
                   : "red"
               }
             />
             <Text
               style={
-                statistics.currentMonthData?.memberIncrease <= 0
-                  ? styles.trendDownText
-                  : styles.trendupText
+                statistics?.currentMonthData?.memberIncrease ?? 0 > 0
+                  ? styles.trendupText
+                  : styles.trendDownText
               }
             >
-              {statistics.currentMonthData?.revenueIncrease}%
+              {statistics?.currentMonthData?.revenueIncrease}%
             </Text>
           </View>
         </View>
@@ -133,7 +128,8 @@ export default StatiCard;
 const styles = StyleSheet.create({
   card: {
     backgroundColor: "white",
-    borderRadius: 16,
+    borderRadius: 10,
+    marginTop: 20,
     overflow: "hidden",
   },
   header: {
@@ -142,6 +138,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 15,
+    backgroundColor: AppColor.primary,
   },
   selectedDateText: {
     fontSize: 18,
