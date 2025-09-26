@@ -130,7 +130,7 @@ export default function Statistics() {
             />
             <SummaryCard
               label="Revanue"
-              value={statistics.currentMonthData.revenue}
+              value={`₹${statistics.currentMonthData.revenue}`}
               backgroundColor="#EF4444"
               iconComponent={
                 <FontAwesome5

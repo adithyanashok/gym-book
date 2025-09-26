@@ -11,10 +11,9 @@ import { UpdateMemberPlanDto } from './dtos/update-member-plan.dto';
 import { GetByDateDto } from '../common/dtos/get-by-date.dto';
 import { AmountsService } from 'src/amounts/amounts.service';
 import { instanceToPlain } from 'class-transformer';
-import { addMonths, differenceInCalendarDays } from 'date-fns';
+import { addMonths } from 'date-fns';
 import { UpdateEndDateProvider } from '../common/providers/update-end-date.provider';
 import { GetExpiration } from 'src/common/providers/get-expiresin.providers';
-import { PlanType } from 'src/plans/enums/plan.enum';
 import { MembershipService } from 'src/membership/membership.service';
 import { GymService } from 'src/gym/gym.service';
 import { SearchMemberDto } from './dtos/search-member.dto';
@@ -199,8 +198,6 @@ export class MembersService {
       const expiresIn = this.getExpiresInProvider.getDaysUntilExpiration(updatedMember.endDate);
 
       const status = expiresIn <= 0 ? 'expired' : 'active';
-
-      await this.planService.createUserPlan(updatedMember);
 
       return new ApiResponse(true, 'Successfully Updated', { ...updatedMember, expiresIn, status });
     } catch (error) {

@@ -1,43 +1,55 @@
 // store/slices/PlansSlice.ts
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { ApiResponse,  } from '@/types/member.types';
-import { RootState } from '../store';
-import { Plan } from '@/types/plan.types';
-import { planApi } from '@/services/planApi';
-
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { ApiResponse } from "@/types/member.types";
+import { RootState } from "../store";
+import { planApi } from "@/services/planApi";
+import { PlanData } from "@/types/plan.type";
 
 // Define the state interface
 interface PlansState {
-  items: Plan[];
-  loading: 'idle' | 'pending' | 'succeeded' | 'failed';
+  items: PlanData[];
+  loading: "idle" | "pending" | "succeeded" | "failed";
   error: string | null;
-
 }
 
 // Initial state
 const initialState: PlansState = {
   items: [],
-  loading: 'idle',
+  loading: "idle",
   error: null,
-
 };
 
-// Create the async thunk with proper typing
 export const fetchPlans = createAsyncThunk(
-  'plans/fetch-plans',
+  "plans/fetch-plans",
   async (_, thunkAPI) => {
     try {
       const response = await planApi.getPlans();
       return response;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error instanceof Error ? error.message : 'An unknown error occurred');
+      return thunkAPI.rejectWithValue(
+        error instanceof Error ? error.message : "An unknown error occurred"
+      );
+    }
+  }
+);
+
+export const addPlan = createAsyncThunk(
+  "plans/add-plans",
+  async (plan: PlanData, thunkAPI) => {
+    try {
+      const response = await planApi.addPlan(plan);
+      return response;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error instanceof Error ? error.message : "An unknown error occurred"
+      );
     }
   }
 );
 
 // Create the slice
 const plansSlice = createSlice({
-  name: 'plans',
+  name: "plans",
   initialState,
   reducers: {
     clearError: (state) => {
@@ -45,24 +57,42 @@ const plansSlice = createSlice({
     },
     resetPlans: (state) => {
       state.items = [];
-      state.loading = 'idle';
+      state.loading = "idle";
       state.error = null;
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(fetchPlans.pending, (state) => {
-        state.loading = 'pending';
+        state.loading = "pending";
         state.error = null;
       })
-      .addCase(fetchPlans.fulfilled, (state, action: PayloadAction<ApiResponse<Plan[]>>) => {
-        state.loading = 'succeeded';
-        state.error = null;
-        state.items = action.payload.data;
-    
-      })
+      .addCase(
+        fetchPlans.fulfilled,
+        (state, action: PayloadAction<ApiResponse<PlanData[]>>) => {
+          state.loading = "succeeded";
+          state.error = null;
+          state.items = action.payload.data;
+        }
+      )
       .addCase(fetchPlans.rejected, (state, action) => {
-        state.loading = 'failed';
+        state.loading = "failed";
+        state.error = action.payload as string;
+      })
+      .addCase(addPlan.pending, (state) => {
+        state.loading = "pending";
+        state.error = null;
+      })
+      .addCase(
+        addPlan.fulfilled,
+        (state, action: PayloadAction<ApiResponse<PlanData>>) => {
+          state.loading = "succeeded";
+          state.error = null;
+          state.items.unshift(action.payload.data);
+        }
+      )
+      .addCase(addPlan.rejected, (state, action) => {
+        state.loading = "failed";
         state.error = action.payload as string;
       });
   },

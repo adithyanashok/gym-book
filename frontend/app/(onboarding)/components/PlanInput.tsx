@@ -7,11 +7,15 @@ import RNPickerSelect from "react-native-picker-select";
 
 interface Props {
   label: string;
+  name?: string;
+  duration?: string;
+  amount?: string;
   placeholder: string;
   onNameChange: (value: string) => void;
   onDurationChange: (value: string) => void;
-  onAmountChange: (value: string) => void;
+  onAmountChange: (value: number) => void;
   onDelete: () => void;
+  showDeleteIcon: boolean;
 }
 
 const durations = [
@@ -36,7 +40,14 @@ const PlanInput = ({
   onDelete,
   onDurationChange,
   onAmountChange,
+  showDeleteIcon,
+  name,
+  amount,
+  duration,
 }: Props) => {
+  console.log(amount);
+  console.log(duration);
+  console.log(name);
   return (
     <View>
       <View
@@ -46,7 +57,7 @@ const PlanInput = ({
           alignItems: "center",
         }}
       >
-        <View style={styles.inputBox}>
+        <View style={[styles.inputBox, !showDeleteIcon && { width: "100%" }]}>
           <MaterialIcons
             name="card-membership"
             size={22}
@@ -59,17 +70,20 @@ const PlanInput = ({
               fontSize: 16,
               width: "100%",
             }}
+            value={name}
             onChangeText={onNameChange}
           />
         </View>
-        <MaterialIcons
-          onPress={() => onDelete()}
-          name="delete-outline"
-          size={24}
-          color={AppColor.grey}
-        />
+        {showDeleteIcon && (
+          <MaterialIcons
+            onPress={() => onDelete()}
+            name="delete-outline"
+            size={24}
+            color={AppColor.grey}
+          />
+        )}
       </View>
-      <View style={styles.inputBox}>
+      <View style={[styles.inputBox, !showDeleteIcon && { width: "100%" }]}>
         <FontAwesome6 name="money-check" size={22} color={AppColor.grey} />
         <TextInput
           placeholder={"1000"}
@@ -78,7 +92,8 @@ const PlanInput = ({
             fontSize: 16,
             width: "100%",
           }}
-          onChangeText={onAmountChange}
+          value={amount?.toString()}
+          onChangeText={(value) => onAmountChange(parseInt(value))}
         />
       </View>
 
@@ -86,6 +101,7 @@ const PlanInput = ({
         <RNPickerSelect
           placeholder={{ label: "Duration", color: AppColor.grey }}
           style={{ placeholder: { color: AppColor.grey } }}
+          value={duration}
           onValueChange={onDurationChange}
           items={durations.map((e) => ({
             label: `${e.label} Month`,

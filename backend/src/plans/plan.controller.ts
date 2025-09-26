@@ -23,8 +23,9 @@ export class PlansController {
     description: 'Successfully Created',
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
-  public async create(@Body() createplanDto: CreatePlanDto) {
-    return this.planService.create(createplanDto);
+  public async create(@Req() req: AuthenticatedRequest, @Body() createplanDto: CreatePlanDto) {
+    console.log(createplanDto);
+    return this.planService.create(req.user['sub'], createplanDto);
   }
 
   // Get all plans

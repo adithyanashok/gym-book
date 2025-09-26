@@ -27,6 +27,7 @@ import { GymData } from "@/types/gym.type";
 import { PlanData } from "@/types/plan.type";
 import PlanInput from "../(onboarding)/components/PlanInput";
 import { addGymDetails } from "@/store/slices/gymSlice";
+import PrimaryButton from "@/components/PrimaryButton";
 
 const CreateGym = () => {
   const toast = useToast();
@@ -48,7 +49,10 @@ const CreateGym = () => {
     const newPlanId = generatePlanId();
     setPlanIds((prev) => [...prev, newPlanId]);
     // Add empty plan detail for the new plan
-    setPlanDetails((prev) => [...prev, { duration: "", name: "", amount: 0 }]);
+    setPlanDetails((prev) => [
+      ...prev,
+      { duration: "", name: "", amount: 0, id: 0 },
+    ]);
   };
 
   const handlePlanDetailChange = (
@@ -214,6 +218,7 @@ const CreateGym = () => {
         >
           <Text style={addMemberStyle.submitButtonText}>Create Gym</Text>
         </TouchableOpacity>
+        <PrimaryButton onClick={handleSubmit} text="+ Add plan" />
       </ScrollView>
     </SafeScreen>
   );

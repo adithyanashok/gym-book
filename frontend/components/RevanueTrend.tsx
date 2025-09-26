@@ -40,7 +40,7 @@ const RevenueTrendChart = () => {
                     : item.month}
                 </Text>
                 <Text style={styles.chartValue}>
-                  ${item.revanue.toFixed(0)}
+                  ₹{item.revanue.toFixed(0)}
                 </Text>
               </View>
 

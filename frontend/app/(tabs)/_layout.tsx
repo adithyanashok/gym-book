@@ -46,7 +46,9 @@ export default function TabLayout() {
       <Tabs.Screen
         name="my-gym"
         options={{
-          title: "Gym Profile",
+          headerShown: true,
+          headerTitleAlign: "center",
+          title: "Fit Hub",
           tabBarIcon: ({ focused, color, size }) => (
             <Ionicons name="person-circle-outline" size={24} color={color} />
           ),

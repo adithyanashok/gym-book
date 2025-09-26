@@ -84,7 +84,7 @@ const StatiCard = () => {
           </View>
           <Text style={styles.detailKeyText}>Revenue</Text>
           <Text style={styles.detailValueText}>
-            ${statistics?.currentMonthData?.revenue}
+            ₹{statistics?.currentMonthData?.revenue}
           </Text>
           {/* Revanue */}
           <View

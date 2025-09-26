@@ -1,14 +1,14 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Plan } from './entities/plan.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePlanDto } from './dtos/create-plan.dto';
 import { ApiResponse } from 'src/common/dtos/api-response.dto';
 import { UpdatePlanDto } from './dtos/update-plan.dto';
-import { UserPlan } from './entities/user-plan.entity';
 import { Member } from 'src/members/entities/member.entity';
 import { GetByDateDto } from 'src/common/dtos/get-by-date.dto';
 import { addMonths } from 'date-fns';
+import { GymService } from 'src/gym/gym.service';
 
 @Injectable()
 export class PlanService {
@@ -20,16 +20,15 @@ export class PlanService {
     private readonly planRepository: Repository<Plan>,
 
     /**
-     * Injecting planRepository
-     */
-    @InjectRepository(UserPlan)
-    private readonly userPlanRepository: Repository<UserPlan>,
-
-    /**
      * Injecting memberRepository
      */
     @InjectRepository(Member)
     private readonly memberRepository: Repository<Member>,
+
+    /**
+     * Injecting gymService
+     */
+    private readonly gymService: GymService,
   ) {}
 
   // Get plan
@@ -47,13 +46,18 @@ export class PlanService {
   }
 
   // Createing new plan
-  public async create(createPlanDto: CreatePlanDto) {
+  public async create(gymId: number, createPlanDto: CreatePlanDto) {
     try {
+      const gym = await this.gymService.findOneById(gymId);
+
+      if (!gym) {
+        throw new NotFoundException('Gym not found');
+      }
       // Create Plan
-      const Plan = this.planRepository.create(createPlanDto);
+      const plan = this.planRepository.create({ ...createPlanDto, gym });
 
       // Save Plan
-      const savedPlan = await this.planRepository.save(Plan);
+      const savedPlan = await this.planRepository.save(plan);
 
       // Return response
       return new ApiResponse(true, 'Plan Created', savedPlan);
@@ -99,23 +103,6 @@ export class PlanService {
     } catch (error) {
       console.log(error);
       throw error;
-    }
-  }
-
-  // Createing new user plan
-  public async createUserPlan(member: Member) {
-    try {
-      const userPlan = this.userPlanRepository.create({
-        member: member,
-        memberId: member.id,
-        plan: member.plan,
-        planId: member.planId,
-      });
-
-      await this.userPlanRepository.save(userPlan);
-    } catch (error) {
-      console.log(error);
-      throw new BadRequestException('Something went wrong when creating user plan');
     }
   }
 
