@@ -1,18 +1,23 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import React from "react";
 import { Payment } from "@/types/payment.type";
 import { AppColor } from "@/constants/colors";
-import { Link, router } from "expo-router";
-type Props = {
-  payment: Payment[];
-};
+import { useLocalSearchParams } from "expo-router";
+import {
+  selectMember,
+  selectPaymentHistory,
+} from "@/store/slices/membersSlice";
+import { useSelector } from "react-redux";
 
-const PaymentHistory = ({ payment }: Props) => {
+const PaymentsHistory = () => {
+  const payment = useSelector(selectPaymentHistory);
+  const member = useSelector(selectMember);
+
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Payment History</Text>
+      <Text style={styles.sectionTitle}>Payments - {member?.name}</Text>
 
-      {payment.slice(0, 5).map((payment, index) => (
+      {payment.map((payment, index) => (
         <View key={payment.id} style={styles.paymentItem}>
           <View>
             <Text style={styles.paymentDate}>
@@ -25,29 +30,20 @@ const PaymentHistory = ({ payment }: Props) => {
           <Text style={styles.paymentAmount}>₹{payment.amount}</Text>
         </View>
       ))}
-
-      <Link
-        href={{
-          pathname: "/payments-history",
-          params: { payments: JSON.stringify(payment) },
-        }}
-        style={styles.viewAllButton}
-      >
-        <Text style={styles.viewAllButtonText}>View All Payments</Text>
-      </Link>
     </View>
   );
 };
 
-export default PaymentHistory;
+export default PaymentsHistory;
 
 const styles = StyleSheet.create({
   section: {
     backgroundColor: "#FFFFFF",
     borderRadius: 12,
     padding: 20,
-    marginHorizontal: 16,
+    marginHorizontal: 8,
     marginBottom: 16,
+    marginTop: 16,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -110,6 +106,5 @@ const styles = StyleSheet.create({
     color: "#4264FB",
     fontSize: 16,
     fontWeight: "600",
-    textAlign: "center",
   },
 });

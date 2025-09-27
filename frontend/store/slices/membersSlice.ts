@@ -9,16 +9,19 @@ import {
 } from "@/types/member.types";
 import { RootState } from "../store";
 import { ApiError } from "@/types/error.type";
+import { Payment } from "@/types/payment.type";
 
 // Define the state interface
 interface MembersState {
   items: Member[];
+  paymentHistory: Payment[];
   member: Member | null;
-  fetchLoading: "idle" | "pending" | "succeeded" | "failed";
-  createLoading: "idle" | "pending" | "succeeded" | "failed";
-  getByIdLoading: "idle" | "pending" | "succeeded" | "failed";
-  renewLoading: "idle" | "pending" | "succeeded" | "failed";
-  editLoading: "idle" | "pending" | "succeeded" | "failed";
+  fetchMemberLoading: boolean;
+  fetchPaymentLoading: boolean;
+  createLoading: boolean;
+  getByIdLoading: boolean;
+  renewLoading: boolean;
+  editLoading: boolean;
   error: string | null;
   currentPage: number;
   totalPages: number;
@@ -27,12 +30,14 @@ interface MembersState {
 // Initial state
 const initialState: MembersState = {
   items: [],
+  paymentHistory: [],
   member: null,
-  fetchLoading: "idle",
-  createLoading: "idle",
-  getByIdLoading: "idle",
-  renewLoading: "idle",
-  editLoading: "idle",
+  fetchMemberLoading: false,
+  fetchPaymentLoading: false,
+  createLoading: false,
+  getByIdLoading: false,
+  renewLoading: false,
+  editLoading: false,
   error: null,
   currentPage: 1,
   totalPages: 1,
@@ -141,6 +146,21 @@ export const addMemberImage = createAsyncThunk(
   }
 );
 
+// Get payments
+export const getPayments = createAsyncThunk(
+  "members/getPayments",
+  async (memberId: number, { rejectWithValue }) => {
+    try {
+      const response = await membersApi.getPaymentHistory(memberId);
+      return response;
+    } catch (error) {
+      return rejectWithValue(
+        error instanceof Error ? error.message : "An unknown error occurred"
+      );
+    }
+  }
+);
+
 // Create the slice
 const membersSlice = createSlice({
   name: "members",
@@ -151,10 +171,9 @@ const membersSlice = createSlice({
     },
     resetMembers: (state) => {
       state.items = [];
-      state.fetchLoading = "idle";
-      state.createLoading = "idle";
-      state.getByIdLoading = "idle";
-      state.renewLoading = "idle";
+      state.createLoading = false;
+      state.getByIdLoading = false;
+      state.renewLoading = false;
       state.error = null;
       state.currentPage = 1;
       state.totalPages = 1;
@@ -166,68 +185,68 @@ const membersSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchMembers.pending, (state) => {
-        state.fetchLoading = "pending";
+        state.fetchMemberLoading = true;
         state.error = null;
       })
       .addCase(
         fetchMembers.fulfilled,
         (state, action: PayloadAction<ApiResponse<Member[]>>) => {
-          state.fetchLoading = "succeeded";
+          state.fetchMemberLoading = false;
           state.error = null;
           state.items = action.payload.data;
         }
       )
       .addCase(fetchMembers.rejected, (state, action) => {
-        state.fetchLoading = "failed";
+        state.fetchMemberLoading = false;
         state.error = action.payload as string;
       })
 
       // CREATE MEMBER cases
       .addCase(createMember.pending, (state) => {
-        state.createLoading = "pending";
+        state.createLoading = true;
         state.error = null;
       })
       .addCase(
         createMember.fulfilled,
         (state, action: PayloadAction<ApiResponse<Member>>) => {
-          state.createLoading = "succeeded";
+          state.createLoading = false;
           state.error = null;
           state.member = action.payload.data;
           state.items.unshift(action.payload.data);
         }
       )
       .addCase(createMember.rejected, (state, action) => {
-        state.createLoading = "failed";
+        state.createLoading = false;
         state.error = action.payload as string;
       })
 
       // GET MEMBER BY ID
       .addCase(getMemberById.pending, (state) => {
-        state.getByIdLoading = "pending";
+        state.fetchMemberLoading = true;
         state.error = null;
       })
       .addCase(
         getMemberById.fulfilled,
         (state, action: PayloadAction<ApiResponse<Member>>) => {
-          state.getByIdLoading = "succeeded";
+          state.fetchMemberLoading = false;
           state.error = null;
           state.member = action.payload.data;
         }
       )
       .addCase(getMemberById.rejected, (state, action) => {
-        state.getByIdLoading = "failed";
+        state.fetchMemberLoading = false;
         state.error = action.payload as string;
       })
 
       // RENEW MEMBER
       .addCase(renewMemberPlan.pending, (state) => {
-        state.renewLoading = "pending";
+        state.renewLoading = true;
         state.error = null;
       })
       .addCase(
         renewMemberPlan.fulfilled,
         (state, action: PayloadAction<ApiResponse<Member>>) => {
-          state.renewLoading = "succeeded";
+          state.renewLoading = false;
           state.error = null;
           state.member = action.payload.data;
           state.items = [
@@ -237,19 +256,19 @@ const membersSlice = createSlice({
         }
       )
       .addCase(renewMemberPlan.rejected, (state, action) => {
-        state.renewLoading = "failed";
+        state.renewLoading = false;
         state.error = action.payload as string;
       })
 
       // EDIT MEMBER
       .addCase(editMember.pending, (state) => {
-        state.editLoading = "pending";
+        state.editLoading = true;
         state.error = null;
       })
       .addCase(
         editMember.fulfilled,
         (state, action: PayloadAction<ApiResponse<Member>>) => {
-          state.editLoading = "succeeded";
+          state.editLoading = false;
           state.error = null;
           state.member = action.payload.data;
           state.items = [
@@ -259,25 +278,43 @@ const membersSlice = createSlice({
         }
       )
       .addCase(editMember.rejected, (state, action) => {
-        state.editLoading = "failed";
+        state.editLoading = false;
         state.error = action.payload as string;
       })
 
       // ADD MEMBER IMAGE cases
       .addCase(addMemberImage.pending, (state) => {
-        state.createLoading = "pending";
+        state.createLoading = true;
         state.error = null;
       })
       .addCase(
         addMemberImage.fulfilled,
         (state, action: PayloadAction<ApiResponse<Member>>) => {
-          state.createLoading = "succeeded";
+          state.createLoading = false;
           state.error = null;
           // state.items.unshift(action.payload.data);
         }
       )
       .addCase(addMemberImage.rejected, (state, action) => {
-        state.createLoading = "failed";
+        state.createLoading = false;
+        state.error = action.payload as string;
+      })
+
+      // GET PAYMENTS
+      .addCase(getPayments.pending, (state) => {
+        state.fetchPaymentLoading = true;
+        state.error = null;
+      })
+      .addCase(
+        getPayments.fulfilled,
+        (state, action: PayloadAction<ApiResponse<Payment[]>>) => {
+          state.fetchPaymentLoading = false;
+          state.error = null;
+          state.paymentHistory = action.payload.data;
+        }
+      )
+      .addCase(getPayments.rejected, (state, action) => {
+        state.fetchPaymentLoading = false;
         state.error = action.payload as string;
       });
   },
@@ -286,11 +323,13 @@ const membersSlice = createSlice({
 // Export actions
 export const { clearError, resetMembers, addMember } = membersSlice.actions;
 
-// Selectors (useful for accessing state in components)
+// Members Selectors
 export const selectMembers = (state: RootState) => state.members.items;
 export const selectMembersLoading = (state: RootState) =>
-  state.members.fetchLoading;
+  state.members.fetchMemberLoading;
 export const selectMembersError = (state: RootState) => state.members.error;
+
+// Member Selectors
 
 export const selectMember = (state: RootState) => state.members.member;
 export const selectMemberLoading = (state: RootState) =>
@@ -299,6 +338,13 @@ export const selectMemberError = (state: RootState) => state.members.error;
 
 export const selectMemberCreateLoading = (state: RootState) =>
   state.members.createLoading;
+
+// Payment Selectors
+export const selectPayments = (state: RootState) =>
+  state.members.paymentHistory;
+export const selectPaymentHistory = (state: RootState) =>
+  state.members.paymentHistory;
+export const selectPaymentError = (state: RootState) => state.members.error;
 
 // Export the reducer
 export default membersSlice.reducer;

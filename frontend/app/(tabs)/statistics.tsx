@@ -22,8 +22,14 @@ import {
   Ionicons,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
-import { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import {
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import MonthPicker from "@/components/MonthPicker";
@@ -31,10 +37,29 @@ import { useToast } from "@/hooks/useToasts";
 
 export default function Statistics() {
   const toast = useToast();
+  const [refreshing, setRefreshing] = useState(false);
+
   const dispatch = useDispatch<AppDispatch>();
   const { startDate } = getCurrentMonthRange();
-
   const [selectedMonth, setSelectedMonth] = useState<string>(startDate);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    dispatch(getPlanDistribution({ startDate: selectedMonth }));
+    dispatch(
+      getMonthlyRevanues({
+        startDate: selectedMonth,
+      })
+    );
+    dispatch(
+      getStatistics({
+        startDate: selectedMonth,
+      })
+    );
+
+    setRefreshing(false);
+  }, [dispatch]);
+
   useEffect(() => {
     dispatch(getPlanDistribution({ startDate: selectedMonth }));
     dispatch(
@@ -82,6 +107,14 @@ export default function Statistics() {
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#0000FF"]}
+            tintColor="#0000ff"
+          />
+        }
       >
         {/* Header */}
         <View style={styles.header}>

@@ -47,6 +47,20 @@ export const addPlan = createAsyncThunk(
   }
 );
 
+export const editPlan = createAsyncThunk(
+  "plans/edit-plans",
+  async (plan: PlanData, thunkAPI) => {
+    try {
+      const response = await planApi.editPlan(plan);
+      return response;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error instanceof Error ? error.message : "An unknown error occurred"
+      );
+    }
+  }
+);
+
 // Create the slice
 const plansSlice = createSlice({
   name: "plans",
@@ -92,6 +106,25 @@ const plansSlice = createSlice({
         }
       )
       .addCase(addPlan.rejected, (state, action) => {
+        state.loading = "failed";
+        state.error = action.payload as string;
+      })
+      .addCase(editPlan.pending, (state) => {
+        state.loading = "pending";
+        state.error = null;
+      })
+      .addCase(
+        editPlan.fulfilled,
+        (state, action: PayloadAction<ApiResponse<PlanData>>) => {
+          state.loading = "succeeded";
+          state.error = null;
+          state.items = [
+            action.payload.data,
+            ...state.items.filter((item) => item.id !== action.payload.data.id),
+          ];
+        }
+      )
+      .addCase(editPlan.rejected, (state, action) => {
         state.loading = "failed";
         state.error = action.payload as string;
       });

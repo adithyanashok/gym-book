@@ -19,18 +19,19 @@ const LogoutButton = () => {
       <TouchableOpacity onPress={() => handleLogout()}>
         <View
           style={{
-            backgroundColor: "red",
+            backgroundColor: "#ffffff",
             padding: 10,
-            marginTop: 50,
-            marginHorizontal: 10,
+
             borderRadius: 10,
+            borderColor: "red",
+            borderWidth: 1,
           }}
         >
           <Text
             style={{
-              color: "white",
-              fontSize: 18,
-              fontWeight: "500",
+              color: "red",
+              fontSize: 14,
+              fontWeight: "400",
               textAlign: "center",
             }}
           >

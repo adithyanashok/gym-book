@@ -25,4 +25,16 @@ export const planApi = {
       throw error;
     }
   },
+
+  editPlan: async (plan: PlanData) => {
+    try {
+      const response = await apiClient.patch<ApiResponse<PlanData>>(
+        `/plans/${plan.id}`,
+        plan
+      );
+      return response;
+    } catch (error: any) {
+      throw error;
+    }
+  },
 };

@@ -2,11 +2,8 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 import { Platform } from "react-native";
 import { STORAGE } from "@/utils/storage";
 
-const API_BASE_URL =
-  Platform.OS === "android"
-    ? "http://192.168.1.100:3000"
-    : // ? "http://10.0.2.2:3000"
-      "http://localhost:3000"; // iOS simulator
+const API_BASE_URL = "http://10.0.2.2:3000";
+// const API_BASE_URL = "http://192.168.1.101:3000";
 
 // Create axios instance with default config
 const axiosInstance: AxiosInstance = axios.create({

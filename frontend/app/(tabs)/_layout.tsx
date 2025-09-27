@@ -15,11 +15,11 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          headerShown: true,
+          // headerShown: true,
 
-          headerTitleAlign: "center",
+          // headerTitleAlign: "center",
 
-          title: "Fit Hub",
+          // title: "Fit Hub",
           tabBarIcon: ({ focused, color, size }) => (
             <Feather name="home" size={24} color={color} />
           ),

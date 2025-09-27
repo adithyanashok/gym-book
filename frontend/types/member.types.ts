@@ -1,5 +1,4 @@
-import { Plan } from "./plan.types";
-
+import { PlanData } from "./plan.type";
 
 // This represents a single member object from your API
 export interface Member {
@@ -11,13 +10,12 @@ export interface Member {
   address: string | null;
   planId: number;
   expiresIn: number;
-  plan: Plan;
-  startDate: string; 
-  endDate: string;   
-  createdAt: string; 
-  updatedAt: string; 
-  image:string | null;
-
+  plan: PlanData;
+  startDate: string;
+  endDate: string;
+  createdAt: string;
+  updatedAt: string;
+  image: string | null;
 }
 
 // This represents the successful response structure from your API
@@ -31,7 +29,7 @@ export interface ApiResponse<T> {
 export interface GetMembersParams {
   page?: number;
   limit?: number;
-  planId?:number;
+  planId?: number;
   // Add other possible query parameters here
   [key: string]: string | number | undefined;
 }
@@ -43,5 +41,5 @@ export interface MemberData {
   address: string;
   planId: number;
   startDate: Date;
-  image:string | null;
+  image: string | null;
 }

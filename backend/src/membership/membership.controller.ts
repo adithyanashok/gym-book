@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Patch, Req } from '@nestjs/common';
 import { MembershipService } from './membership.service';
 import { RenewMembershipDto } from './dtos/renew-membership.dto';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import type { AuthenticatedRequest } from 'src/common/request/request';
-
+@ApiBearerAuth()
 @Controller('membership')
 export class MembershipController {
   constructor(
@@ -37,5 +37,16 @@ export class MembershipController {
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   public async getMembership(@Param('id', ParseIntPipe) id: number) {
     return await this.membershipService.getMemberships(id);
+  }
+
+  @Get('/payments/:id')
+  @ApiOperation({ summary: 'Get payments of a member' })
+  @ApiResponse({
+    status: 200,
+    description: 'Payments Fetched Successfully!',
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  public async getPaymentHistory(@Param('id', ParseIntPipe) id: number) {
+    return await this.membershipService.getPaymentHistory(id);
   }
 }

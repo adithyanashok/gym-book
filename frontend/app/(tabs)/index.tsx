@@ -8,6 +8,7 @@ import { getOverview, getStatistics } from "@/store/slices/statisticsSlice";
 
 import { AppDispatch } from "@/store/store";
 import { getCurrentMonthRange } from "@/utils/dateUtils";
+import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -18,6 +19,7 @@ import {
   Text,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function Index() {
@@ -50,48 +52,53 @@ export default function Index() {
   }
 
   return (
-    <View
-      style={{
-        paddingHorizontal: 10,
-      }}
-    >
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            colors={["#0000FF"]}
-            tintColor="#0000ff"
-          />
-        }
+    <SafeAreaView edges={["top"]}>
+      <View
+        style={{
+          paddingHorizontal: 10,
+        }}
       >
-        <StatiCard />
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={["#0000FF"]}
+              tintColor="#0000ff"
+            />
+          }
+        >
+          <View style={styles.header}>
+            <Text style={styles.welcomeText}>Welcome back Adithyan</Text>
+            <MaterialIcons name="notifications-none" size={24} color="black" />
+          </View>
+          <StatiCard />
 
-        <View style={styles.latestMemberContainer}>
-          <Text style={styles.latestMembersText}>Latest Members</Text>
+          <View style={styles.membersContainers}>
+            <Text style={styles.containerText}>Expiring soon</Text>
 
-          <FlatList
-            scrollEnabled={false}
-            style={{ marginTop: 10 }}
-            data={members.slice(0, 4)}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={(item) => (
-              <MemberCard
-                memberData={item.item}
-                onPress={() => {
-                  router.push({
-                    pathname: "/(member)/member-details",
-                    params: { memberId: item.item.id },
-                  });
-                }}
-              />
-            )}
-          />
-        </View>
-        <LogoutButton />
-      </ScrollView>
-    </View>
+            <FlatList
+              scrollEnabled={false}
+              style={{ marginTop: 10 }}
+              data={members.slice(0, 4)}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={(item) => (
+                <MemberCard
+                  memberData={item.item}
+                  onPress={() => {
+                    router.push({
+                      pathname: "/(member)/member-details",
+                      params: { memberId: item.item.id },
+                    });
+                  }}
+                />
+              )}
+            />
+          </View>
+        </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
@@ -100,6 +107,14 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: 10,
+    marginTop: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  welcomeText: {
+    fontSize: 20,
+    fontWeight: "300",
   },
   welcome: {
     fontSize: 18,
@@ -107,8 +122,8 @@ const styles = StyleSheet.create({
     color: "black",
     // marginBottom: 10,
   },
-  latestMembersText: { marginLeft: 10, marginTop: 16, fontSize: 18 },
-  latestMemberContainer: {
+  containerText: { marginLeft: 10, marginTop: 16, fontSize: 18 },
+  membersContainers: {
     backgroundColor: "white",
     marginTop: 20,
     borderRadius: 10,

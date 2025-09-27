@@ -4,6 +4,7 @@ import { AddGymDto } from './dtos/add-gym.dto';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Public } from 'src/common/decorators/public.decorator';
 import type { AuthenticatedRequest } from 'src/common/request/request';
+import { UpdateGymDto } from './dtos/update-gym.dto';
 
 @Controller('gym')
 @ApiBearerAuth()
@@ -16,15 +17,27 @@ export class GymController {
   ) {}
 
   @Patch()
-  @ApiOperation({ summary: 'Update gym' })
+  @ApiOperation({ summary: 'Add gym' })
   @ApiResponse({
     status: 201,
-    description: 'Gym updated Successfully',
+    description: 'Gym Created Successfully',
   })
   @ApiResponse({ status: 404, description: 'Gym not found.' })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
-  public async update(@Req() req: AuthenticatedRequest, @Body() addGymDto: AddGymDto) {
+  public async create(@Req() req: AuthenticatedRequest, @Body() addGymDto: AddGymDto) {
     return await this.gymService.addGym(req.user['sub'], addGymDto);
+  }
+
+  @Patch('/update')
+  @ApiOperation({ summary: 'Update gym' })
+  @ApiResponse({
+    status: 201,
+    description: 'Gym Updated Successfully',
+  })
+  @ApiResponse({ status: 404, description: 'Gym not found.' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  public async update(@Req() req: AuthenticatedRequest, @Body() updateGymDto: UpdateGymDto) {
+    return await this.gymService.editGym(req.user['sub'], updateGymDto);
   }
 
   @Delete()

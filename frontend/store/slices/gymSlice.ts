@@ -99,6 +99,19 @@ export const getGym = createAsyncThunk(
   }
 );
 
+export const editGym = createAsyncThunk(
+  "gymSlice/editGym",
+  async (body: GymData, thunkAPI) => {
+    try {
+      const response = await gymApi.editGym(body);
+      return response;
+    } catch (error) {
+      console.log("SLICE: ", error);
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
 const gymSlice = createSlice({
   name: "gymSlice",
   initialState,
@@ -180,6 +193,21 @@ const gymSlice = createSlice({
         }
       )
       .addCase(getGym.rejected, (state, action) => {
+        state.status = false;
+        state.error = action.payload as string;
+      })
+      .addCase(editGym.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(
+        editGym.fulfilled,
+        (state, action: PayloadAction<ApiResponse<Gym>>) => {
+          state.loading = false;
+          state.status = true;
+          state.gym = action.payload.data;
+        }
+      )
+      .addCase(editGym.rejected, (state, action) => {
         state.status = false;
         state.error = action.payload as string;
       });

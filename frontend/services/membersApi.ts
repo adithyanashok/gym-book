@@ -6,6 +6,7 @@ import {
 } from "@/types/member.types";
 import { apiClient } from "./apiClient";
 import { STORAGE } from "@/utils/storage";
+import { Payment } from "@/types/payment.type";
 
 // Specific API functions with proper typing
 export const membersApi = {
@@ -136,6 +137,20 @@ export const membersApi = {
       return response;
     } catch (error) {
       console.log("File Upload error", error);
+
+      throw error;
+    }
+  },
+
+  getPaymentHistory: async (id: number) => {
+    try {
+      const response = await apiClient.get<ApiResponse<Payment[]>>(
+        `membership/payments/${id}`
+      );
+      console.log("Get payments done");
+      return response;
+    } catch (error) {
+      console.log("Get payments error", error);
 
       throw error;
     }

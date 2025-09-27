@@ -1,4 +1,4 @@
-import { Gym, GymData, OtpData } from "@/types/gym.type";
+import { EditGymType, Gym, GymData, OtpData } from "@/types/gym.type";
 import { apiClient } from "./apiClient";
 import { ApiResponse } from "@/types/member.types";
 import { Admin, GymCredential } from "@/types/admin.type";
@@ -76,6 +76,24 @@ export const gymApi = {
       return response;
     } catch (error: any) {
       console.log(" Get Gym Details error:", error);
+
+      throw error;
+    }
+  },
+
+  editGym: async (body: EditGymType) => {
+    console.log("Making update Details request:", body);
+
+    try {
+      const response = await apiClient.patch<ApiResponse<Gym>>(
+        "/gym/update",
+        body
+      );
+
+      console.log("update Details success:", response);
+      return response;
+    } catch (error: any) {
+      console.log(" update Details error:", error);
 
       throw error;
     }

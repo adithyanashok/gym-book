@@ -162,7 +162,7 @@ export class GymService {
     }
   }
 
-  // Update Gym
+  // Add Gym
   public async addGym(id: number, addGymDto: AddGymDto) {
     try {
       const gym = await this.gymRepository.findOneBy({ id });
@@ -178,6 +178,27 @@ export class GymService {
       const updatedGym = await this.gymRepository.save(gym);
 
       return new ApiResponse(true, 'Gym Created Successfully', updatedGym);
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
+  public async editGym(id: number, updateGymDto: UpdateGymDto) {
+    try {
+      const gym = await this.gymRepository.findOneBy({ id });
+
+      if (!gym) {
+        throw new NotFoundException('Gym Not Found');
+      }
+
+      Object.assign(gym, updateGymDto);
+
+      gym.isDetailComplete = true;
+
+      const updatedGym = await this.gymRepository.save(gym);
+
+      return new ApiResponse(true, 'Gym Updated Successfully', updatedGym);
     } catch (error) {
       console.log(error);
       throw error;

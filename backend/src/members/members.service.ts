@@ -169,43 +169,6 @@ export class MembersService {
     }
   }
 
-  // Renew Plan
-  public async updatePlan(id: number, updateMemberPlanDto: UpdateMemberPlanDto) {
-    try {
-      // Find Member
-      const member = await this.memberRepository.findOneBy({ id });
-      if (!member) {
-        throw new BadRequestException(`Member with ID ${id} is not exist`);
-      }
-
-      const plan = await this.planService.findOneBy(updateMemberPlanDto.planId);
-
-      if (!plan) {
-        throw new BadRequestException(`Plan with ID ${updateMemberPlanDto.planId} is not exist`);
-      }
-
-      member.plan = plan;
-      member.startDate = updateMemberPlanDto.startDate;
-
-      const endDate = this.updateEndDateProvider.updateEndDate(
-        updateMemberPlanDto.startDate,
-        plan.duration,
-      );
-
-      // Save New Member
-      const updatedMember = await this.memberRepository.save({ ...member, endDate: endDate });
-
-      const expiresIn = this.getExpiresInProvider.getDaysUntilExpiration(updatedMember.endDate);
-
-      const status = expiresIn <= 0 ? 'expired' : 'active';
-
-      return new ApiResponse(true, 'Successfully Updated', { ...updatedMember, expiresIn, status });
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
-  }
-
   public async getMembersByDateRange(dateRangeDto: GetByDateDto) {
     try {
       const { startDate } = dateRangeDto;

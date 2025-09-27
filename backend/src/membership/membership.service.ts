@@ -122,7 +122,6 @@ export class MembershipService {
     }
   }
 
-  // Renew Membership
   public async getMemberships(memberId: number) {
     try {
       // Find the member first
@@ -139,6 +138,34 @@ export class MembershipService {
       });
 
       return new ApiResponse(true, 'Membership Fetched Successfully!', members);
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
+  public async getPaymentHistory(memberId: number) {
+    try {
+      // Find the member first
+      const membership = await this.membershipRepository.find({
+        where: { member: { id: memberId } },
+        order: { createdAt: 'DESC' },
+      });
+
+      if (!membership) {
+        throw new NotFoundException(`Not found`);
+      }
+
+      const data = membership.map((e) => {
+        return {
+          date: e.createdAt,
+          amount: e.amount,
+          plan: e.plan_name,
+          id: e.id,
+        };
+      });
+
+      return new ApiResponse(true, 'Payments Fetched Successfully!', data);
     } catch (error) {
       console.log(error);
       throw error;

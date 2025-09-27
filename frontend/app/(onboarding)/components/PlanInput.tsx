@@ -66,11 +66,11 @@ const PlanInput = ({
           <TextInput
             placeholder={placeholder}
             placeholderTextColor={AppColor.grey}
+            defaultValue={name}
             style={{
               fontSize: 16,
               width: "100%",
             }}
-            value={name}
             onChangeText={onNameChange}
           />
         </View>
@@ -92,7 +92,7 @@ const PlanInput = ({
             fontSize: 16,
             width: "100%",
           }}
-          value={amount?.toString()}
+          defaultValue={amount?.toString()}
           onChangeText={(value) => onAmountChange(parseInt(value))}
         />
       </View>

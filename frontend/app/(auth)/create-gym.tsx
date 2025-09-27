@@ -58,7 +58,7 @@ const CreateGym = () => {
   const handlePlanDetailChange = (
     planId: number,
     field: keyof PlanData,
-    value: string
+    value: string | number
   ) => {
     setPlanDetails((prev) => {
       const planIndex = planIds.indexOf(planId);
@@ -182,6 +182,7 @@ const CreateGym = () => {
                 key={planId}
                 label={`Plan ${index + 1}`}
                 placeholder="Monthly"
+                showDeleteIcon={true}
                 onNameChange={(value) =>
                   handlePlanDetailChange(planId, "name", value)
                 }
@@ -218,7 +219,11 @@ const CreateGym = () => {
         >
           <Text style={addMemberStyle.submitButtonText}>Create Gym</Text>
         </TouchableOpacity>
-        <PrimaryButton onClick={handleSubmit} text="+ Add plan" />
+        <PrimaryButton
+          filled={false}
+          onClick={handleSubmit}
+          text="+ Add plan"
+        />
       </ScrollView>
     </SafeScreen>
   );

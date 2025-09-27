@@ -29,32 +29,47 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import {
   getMemberById,
+  getPayments,
   selectMember,
   selectMemberLoading,
+  selectPaymentHistory,
 } from "@/store/slices/membersSlice";
 import { Button } from "@react-navigation/elements";
 import { fetchPlans } from "@/store/slices/plansSlice";
 import Loading from "@/components/Loading";
 import Error from "@/components/Error";
 import NoData from "@/components/NoData";
+import { useToast } from "@/hooks/useToasts";
+import PrimaryButton from "@/components/PrimaryButton";
+import { AppColor } from "@/constants/colors";
 
 export default function MemberDetails() {
+  const toast = useToast();
   const params = useLocalSearchParams();
   const memberId = Number(params.memberId);
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    dispatch(getMemberById(memberId));
-    dispatch(fetchPlans());
+    const fetchDatas = async () => {
+      try {
+        await dispatch(getMemberById(memberId)).unwrap();
+        await dispatch(fetchPlans()).unwrap();
+        await dispatch(getPayments(memberId)).unwrap();
+      } catch (error) {
+        toast.error(error);
+      }
+    };
+    fetchDatas();
   }, [dispatch, memberId]);
 
   const member = useSelector(selectMember);
+  const payment = useSelector(selectPaymentHistory);
 
   const loading = useSelector(
     (state: RootState) => state.members.getByIdLoading
   );
   const error = useSelector((state: RootState) => state.members.error);
-  if (loading === "pending") {
+  if (loading) {
     return <Loading loadingText="Loading" />;
   }
   if (error) {
@@ -85,7 +100,10 @@ export default function MemberDetails() {
         <ContactInformation member={member} />
 
         {/* Payment History */}
-        {/* <PaymentHistory member={member} /> */}
+        <PaymentHistory payment={payment} />
+        <TouchableOpacity style={styles.removeButton} onPress={() => {}}>
+          <Text style={styles.removeButtonText}>Remove {member.name}</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -120,5 +138,22 @@ const styles = StyleSheet.create({
     color: "red",
     textAlign: "center",
     marginBottom: 20,
+  },
+  removeButton: {
+    backgroundColor: "red",
+    borderRadius: 8,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    marginHorizontal: 20,
+    marginBottom: 50,
+    borderColor: "red",
+    borderWidth: 0.8,
+  },
+  removeButtonText: {
+    color: "#ffffff",
+    fontSize: 14,
+    fontWeight: "500",
+    textAlign: "center",
   },
 });

@@ -5,11 +5,15 @@ import { AppColor } from "@/constants/colors";
 interface Props {
   onClick: () => void;
   text: string;
+  notFilled: boolean | null;
 }
-const PrimaryButton = ({ onClick, text }: Props) => {
+const PrimaryButton = ({ onClick, text, notFilled }: Props) => {
   return (
-    <TouchableOpacity style={[styles.button]} onPress={onClick}>
-      <Text style={styles.text}>{text}</Text>
+    <TouchableOpacity
+      style={[styles.button, notFilled && styles.notFilledButton]}
+      onPress={onClick}
+    >
+      <Text style={[styles.text, notFilled && styles.filedText]}>{text}</Text>
     </TouchableOpacity>
   );
 };
@@ -22,6 +26,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     height: 40,
     marginBottom: 12,
+    marginTop: 12,
     alignItems: "center",
     justifyContent: "center",
     shadowOffset: { width: 3, height: 4 },
@@ -29,8 +34,18 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 1,
   },
+  notFilledButton: {
+    backgroundColor: "#ffffff",
+    borderWidth: 1.5,
+    borderColor: AppColor.primary,
+    elevation: 0,
+  },
   text: {
     fontWeight: "400",
     color: "#ffffff",
+  },
+  filedText: {
+    fontWeight: "500",
+    color: AppColor.primary,
   },
 });

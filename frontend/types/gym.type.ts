@@ -19,3 +19,9 @@ export type OtpData = {
   otp: number;
   gymId: number;
 };
+
+export type EditGymType = {
+  username: string;
+  user_email: string;
+  gym_name: string;
+};
