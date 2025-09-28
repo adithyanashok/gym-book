@@ -59,3 +59,8 @@ pids
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 typeorm-cli.config.ts
+
+# Firebase credentials
+firebase-cred.json
+firebase-cred.dev.json
+firebase-cred.prod.json

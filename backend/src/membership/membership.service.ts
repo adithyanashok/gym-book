@@ -11,6 +11,7 @@ import { UpdateEndDateProvider } from 'src/common/providers/update-end-date.prov
 import { ApiResponse } from 'src/common/dtos/api-response.dto';
 import { GymService } from 'src/gym/gym.service';
 import { GetExpiration } from 'src/common/providers/get-expiresin.providers';
+import { NotificationService } from 'src/notification/notification.service';
 
 @Injectable()
 export class MembershipService {
@@ -40,6 +41,10 @@ export class MembershipService {
      * Injecting getExpiresInProvider
      */
     private readonly getExpiresInProvider: GetExpiration,
+    /**
+     * Injecting notification service
+     */
+    private readonly notificationService: NotificationService,
   ) {}
 
   public async create(createMembershipDto: CreateMembershipDto) {
@@ -60,6 +65,22 @@ export class MembershipService {
       });
 
       await this.membershipRepository.save(membership);
+
+      // Schedule a reminder near membership end
+      const token = createMembershipDto.gym?.fcm_token;
+      const title = 'Membership Ending Soon';
+      const body = `Member ${member.name}'s membership for ${membership.plan_name} ends today.`;
+      // schedule at endDate 9am local time (assuming endDate includes tz)
+      const scheduleName = `membership:end:${member.id}:${membership.endDate.getTime()}`;
+      this.notificationService.scheduleOneTimeNotification(
+        scheduleName,
+        new Date(membership.endDate),
+        token ?? '',
+        title,
+        body,
+        { gymId: createMembershipDto.gym?.id, memberId: member.id },
+      );
+
       return membership;
     } catch (error) {
       console.log(error);
@@ -94,6 +115,7 @@ export class MembershipService {
         throw new NotFoundException(`Gym with ID ${gymId} not found`);
       }
 
+      const previousEndDate = member.endDate;
       const endDate = this.updateEndDateProvider.updateEndDate(startDate, plan.duration);
 
       member.plan = plan;
@@ -103,6 +125,12 @@ export class MembershipService {
 
       const renewedMember = await this.memberRepository.save(member);
 
+      // Cancel any prior scheduled end notification for this member
+      if (previousEndDate) {
+        const prevName = `membership:end:${member.id}:${new Date(previousEndDate).getTime()}`;
+        this.notificationService.cancelScheduled(prevName);
+      }
+
       await this.create({
         amount: renewedMember.plan.amount,
         endDate: endDate,
@@ -111,6 +139,7 @@ export class MembershipService {
         startDate: startDate,
         gym: gym,
       });
+      // create() schedules the new endDate notification; no need to schedule again here
       const expiresIn = this.getExpiresInProvider.getDaysUntilExpiration(renewedMember.endDate);
 
       const status = expiresIn <= 0 ? 'expired' : 'active';

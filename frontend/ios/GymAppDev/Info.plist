@@ -28,7 +28,7 @@
         <key>CFBundleURLSchemes</key>
         <array>
           <string>gymappclient</string>
-          <string>com.adithyanashokpv.gymapp.dev</string>
+          <string>com.adithyanashokpv.gymapp</string>
         </array>
       </dict>
       <dict>

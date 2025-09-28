@@ -2,24 +2,29 @@ import { View, Text, TouchableOpacity } from "react-native";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "@/store/store";
-import { logout, selectLoadingAdminLoading } from "@/store/slices/adminSlice";
 import { useRoute } from "@react-navigation/native";
 import { useRouter } from "expo-router";
+import { useToast } from "@/hooks/useToasts";
+import { logout } from "@/store/slices/gymSlice";
 
 const LogoutButton = () => {
   const router = useRouter();
-  const status = useSelector(selectLoadingAdminLoading);
+  const toast = useToast();
   const dispatch = useDispatch<AppDispatch>();
   const handleLogout = async () => {
-    await dispatch(logout());
-    router.replace("/(auth)");
+    try {
+      await dispatch(logout()).unwrap();
+      router.replace("/(auth)");
+    } catch (error) {
+      toast.error(error);
+    }
   };
   return (
     <View>
       <TouchableOpacity onPress={() => handleLogout()}>
         <View
           style={{
-            backgroundColor: "#ffffff",
+            backgroundColor: "red",
             padding: 10,
 
             borderRadius: 10,
@@ -29,7 +34,7 @@ const LogoutButton = () => {
         >
           <Text
             style={{
-              color: "red",
+              color: "white",
               fontSize: 14,
               fontWeight: "400",
               textAlign: "center",

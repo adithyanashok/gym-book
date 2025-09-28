@@ -29,11 +29,9 @@ export const membersApi = {
       const response = await apiClient.get<ApiResponse<Member[]>>(
         `/members/search?${searchParams}`
       );
-      console.log("getMembers success:", response);
 
       return response;
     } catch (error) {
-      console.log("getMembers error:", error);
       throw error;
     }
   },
@@ -58,11 +56,8 @@ export const membersApi = {
         memberData
       );
 
-      console.log("createMember success:", response);
       return response;
     } catch (error: any) {
-      console.log("createMember error:", error);
-
       throw error;
     }
   },
@@ -133,11 +128,8 @@ export const membersApi = {
         formData,
         "patch"
       );
-      console.log("File Upload done");
       return response;
     } catch (error) {
-      console.log("File Upload error", error);
-
       throw error;
     }
   },
@@ -147,11 +139,8 @@ export const membersApi = {
       const response = await apiClient.get<ApiResponse<Payment[]>>(
         `membership/payments/${id}`
       );
-      console.log("Get payments done");
       return response;
     } catch (error) {
-      console.log("Get payments error", error);
-
       throw error;
     }
   },

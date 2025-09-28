@@ -8,11 +8,17 @@ import { UpdateEndDateProvider } from 'src/common/providers/update-end-date.prov
 import { PlanModule } from 'src/plans/plan.module';
 import { GymModule } from 'src/gym/gym.module';
 import { GetExpiration } from 'src/common/providers/get-expiresin.providers';
+import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
   controllers: [MembershipController],
   providers: [MembershipService, UpdateEndDateProvider, GetExpiration],
-  imports: [TypeOrmModule.forFeature([Membership, Member]), PlanModule, GymModule],
+  imports: [
+    TypeOrmModule.forFeature([Membership, Member]),
+    PlanModule,
+    GymModule,
+    NotificationModule,
+  ],
   exports: [MembershipService],
 })
 export class MembershipModule {}

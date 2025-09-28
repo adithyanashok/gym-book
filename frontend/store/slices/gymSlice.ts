@@ -1,6 +1,6 @@
 import { gymApi } from "@/services/gymApi";
 import { GymCredential } from "@/types/admin.type";
-import { Gym, GymData, OtpData } from "@/types/gym.type";
+import { EditGymType, Gym, GymData, VerifyOtpData } from "@/types/gym.type";
 import { ApiResponse } from "@/types/member.types";
 import { STORAGE } from "@/utils/storage";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
@@ -60,7 +60,7 @@ export const gymLogin = createAsyncThunk(
 // Verify OTP
 export const verifyOtp = createAsyncThunk(
   "gymSlice/verifyOtp",
-  async (body: OtpData, thunkAPI) => {
+  async (body: VerifyOtpData, thunkAPI) => {
     try {
       const response = await gymApi.verifyOtp(body);
 
@@ -68,6 +68,20 @@ export const verifyOtp = createAsyncThunk(
       STORAGE.storeData("refreshToken", response.data.refreshToken);
       STORAGE.storeData("gymId", response.data.gymId);
       return response;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
+export const logout = createAsyncThunk(
+  "gymSlice/logout",
+  async (_, thunkAPI) => {
+    try {
+      await gymApi.logout();
+      await STORAGE.removeData("accessToken");
+      await STORAGE.removeData("refreshToken");
+      await STORAGE.removeData("userId");
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }
@@ -101,7 +115,7 @@ export const getGym = createAsyncThunk(
 
 export const editGym = createAsyncThunk(
   "gymSlice/editGym",
-  async (body: GymData, thunkAPI) => {
+  async (body: EditGymType, thunkAPI) => {
     try {
       const response = await gymApi.editGym(body);
       return response;

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 import { Plan } from 'src/plans/entities/plan.entity';
 
 export class AddGymDto {
@@ -26,4 +26,9 @@ export class AddGymDto {
     ],
   })
   plans: Plan[];
+
+  @ApiProperty({ example: 'string' })
+  @IsOptional()
+  @IsString()
+  fcm_token?: string;
 }

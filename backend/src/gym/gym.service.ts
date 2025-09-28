@@ -125,6 +125,7 @@ export class GymService {
       gymExist.otp = null;
       gymExist.otp_expire = null;
       gymExist.active = true;
+      gymExist.fcm_token = otpVerifyDto.fcm_token;
 
       await this.gymRepository.save(gymExist);
 

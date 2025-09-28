@@ -5,6 +5,7 @@ import plansReducer from "./slices/plansSlice";
 import statisticsReducer from "./slices/statisticsSlice";
 import adminReducer from "./slices/adminSlice";
 import gymSlice from "./slices/gymSlice";
+import notificationsReducer from "./slices/notificationsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ export const store = configureStore({
     statistics: statisticsReducer,
     admin: adminReducer,
     gym: gymSlice,
+    notifications: notificationsReducer,
   },
 });
 

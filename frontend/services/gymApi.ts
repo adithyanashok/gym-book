@@ -1,4 +1,4 @@
-import { EditGymType, Gym, GymData, OtpData } from "@/types/gym.type";
+import { EditGymType, Gym, GymData, VerifyOtpData } from "@/types/gym.type";
 import { apiClient } from "./apiClient";
 import { ApiResponse } from "@/types/member.types";
 import { Admin, GymCredential } from "@/types/admin.type";
@@ -13,7 +13,6 @@ export const gymApi = {
         { phoneNumber }
       );
 
-      console.log("GYM Signup success:", response);
       return response;
     } catch (error: any) {
       console.log("GYM Signup error:", error);
@@ -28,7 +27,6 @@ export const gymApi = {
         { phoneNumber }
       );
 
-      console.log("GYM Login success:", response);
       return response;
     } catch (error: any) {
       console.log("GYM Login error:", error);
@@ -36,16 +34,12 @@ export const gymApi = {
       throw error;
     }
   },
-  verifyOtp: async (body: OtpData) => {
-    console.log("Making OTP verification request:", body);
-
+  verifyOtp: async (body: VerifyOtpData) => {
     try {
       const response = await apiClient.post<ApiResponse<GymCredential>>(
         "/auth/otp-verify",
         body
       );
-
-      console.log("OTP verification success:", response);
       return response;
     } catch (error: any) {
       console.log("OTP verification error:", error);
@@ -59,7 +53,6 @@ export const gymApi = {
     try {
       const response = await apiClient.patch<ApiResponse<Gym>>("/gym", body);
 
-      console.log("Add Gym Details success:", response);
       return response;
     } catch (error: any) {
       console.log(" Add Gym Details error:", error);
@@ -72,7 +65,6 @@ export const gymApi = {
     try {
       const response = await apiClient.get<ApiResponse<Gym>>("/gym");
 
-      console.log("Get Gym Details success:", response);
       return response;
     } catch (error: any) {
       console.log(" Get Gym Details error:", error);
@@ -95,6 +87,14 @@ export const gymApi = {
     } catch (error: any) {
       console.log(" update Details error:", error);
 
+      throw error;
+    }
+  },
+
+  logout: async (): Promise<void> => {
+    try {
+      await apiClient.post("/auth/logout");
+    } catch (error) {
       throw error;
     }
   },

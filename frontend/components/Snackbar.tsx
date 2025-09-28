@@ -25,7 +25,7 @@ const Snackbar: React.FC<SnackbarProps> = ({ message, type, onHide }) => {
   React.useEffect(() => {
     // Slide in animation
     Animated.timing(translateY, {
-      toValue: 26,
+      toValue: 50,
       duration: 300,
       useNativeDriver: true,
     }).start();

@@ -25,6 +25,10 @@ import { Member } from './members/entities/member.entity';
 import { MembershipController } from './membership/membership.controller';
 import { MembershipModule } from './membership/membership.module';
 import { Membership } from './membership/entities/membership.entity';
+import { NotificationModule } from './notification/notification.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { Notification } from './notification/entities/notification.entity';
+
 const ENV = process.env.NODE_ENV;
 @Module({
   imports: [
@@ -34,12 +38,14 @@ const ENV = process.env.NODE_ENV;
       load: [appConfig, databaseConfig],
     }),
 
+    ScheduleModule.forRoot(),
+
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        entities: [Gym, Plan, Member, Membership],
+        entities: [Gym, Plan, Member, Membership, Notification],
         // autoLoadEntities: configService.get('database.autoLoadEntities'),
         synchronize: configService.get('database.synchronize'),
         port: configService.get('database.port'),
@@ -62,6 +68,7 @@ const ENV = process.env.NODE_ENV;
     UploadModule,
     GymModule,
     MembershipModule,
+    NotificationModule,
   ],
   controllers: [AppController, MembershipController],
   providers: [

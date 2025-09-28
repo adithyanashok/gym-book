@@ -56,6 +56,9 @@ export class Gym {
   })
   role: RoleType;
 
+  @Column({ type: 'varchar', nullable: true })
+  fcm_token?: string;
+
   @CreateDateColumn()
   createdAt: Date;
 

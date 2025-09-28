@@ -12,25 +12,18 @@ import {
 import { router, useLocalSearchParams } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "@/store/store";
-import {
-  adminLogin,
-  selectAdmin,
-  selectAdminLoading,
-  selectLoginResponse,
-} from "@/store/slices/adminSlice";
+import { selectAdminLoading } from "@/store/slices/adminSlice";
 import { useToast } from "@/hooks/useToasts";
-import { gymLogin, gymSignup, verifyOtp } from "@/store/slices/gymSlice";
-import { OtpData } from "@/types/gym.type";
-import { gymApi } from "@/services/gymApi";
+import { gymLogin, verifyOtp } from "@/store/slices/gymSlice";
 
+import * as Notification from "expo-notifications";
 export default function OTPScreen() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [countdown, setCountdown] = useState(60);
   const inputRefs = useRef<TextInput[]>([]);
   const dispatch = useDispatch<AppDispatch>();
   const toast = useToast();
-  const admin = useSelector(selectAdmin);
-  const loginResponse = useSelector(selectLoginResponse);
+
   const loading = useSelector(selectAdminLoading);
 
   const { phoneNumber, gymId } = useLocalSearchParams<{
@@ -70,11 +63,14 @@ export default function OTPScreen() {
       Alert.alert("Error", "Please enter the 6-digit OTP");
       return;
     }
-
+    const token = (await Notification.getDevicePushTokenAsync()).data;
+    console.log("FCM: ", token);
     try {
       const otp = parseInt(otpCode);
       const id = parseInt(gymId);
-      const result = await dispatch(verifyOtp({ otp, gymId: id })).unwrap();
+      const result = await dispatch(
+        verifyOtp({ otp, gymId: id, fcm_token: token })
+      ).unwrap();
       if (!result.data.isDetailComplete) {
         router.replace("/create-gym");
       } else {

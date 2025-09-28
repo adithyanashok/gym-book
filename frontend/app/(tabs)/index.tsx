@@ -5,7 +5,7 @@ import StatiCard from "@/components/StatiCard";
 import { useToast } from "@/hooks/useToasts";
 import { fetchMembers, selectMembers } from "@/store/slices/membersSlice";
 import { getOverview, getStatistics } from "@/store/slices/statisticsSlice";
-
+import * as Notifications from "expo-notifications";
 import { AppDispatch } from "@/store/store";
 import { getCurrentMonthRange } from "@/utils/dateUtils";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -21,6 +21,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
+import { selectGym, getGym } from "@/store/slices/gymSlice";
 
 export default function Index() {
   const toast = useToast();
@@ -29,7 +30,13 @@ export default function Index() {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const members = useSelector(selectMembers);
+  const gym = useSelector(selectGym);
   const { startDate } = getCurrentMonthRange();
+
+  // Ensure gym loaded
+  useEffect(() => {
+    dispatch(getGym());
+  }, [dispatch]);
 
   // Refresh Scree
   const onRefresh = useCallback(async () => {
@@ -70,8 +77,9 @@ export default function Index() {
           }
         >
           <View style={styles.header}>
-            <Text style={styles.welcomeText}>Welcome back Adithyan</Text>
-            <MaterialIcons name="notifications-none" size={24} color="black" />
+            <Text style={styles.welcomeText}>
+              Welcome back {gym?.username ?? ""}
+            </Text>
           </View>
           <StatiCard />
 

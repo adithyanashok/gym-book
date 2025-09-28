@@ -16,4 +16,9 @@ export class UpdateGymDto {
   @IsOptional()
   @IsString()
   user_email?: string;
+
+  @ApiProperty({ example: 'string' })
+  @IsOptional()
+  @IsString()
+  fcm_token?: string;
 }

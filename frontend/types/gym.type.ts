@@ -15,9 +15,10 @@ export type GymData = {
   gym_name: string;
   plans: PlanData[];
 };
-export type OtpData = {
+export type VerifyOtpData = {
   otp: number;
   gymId: number;
+  fcm_token: string;
 };
 
 export type EditGymType = {
