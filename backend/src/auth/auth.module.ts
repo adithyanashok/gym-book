@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import jwtConfig from './config/jwt.config';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { RefreshTokenStrategy } from './strategies/refreshToken.strategy';
 import { BlacklistService } from 'src/blacklist/blacklist.service';
 import { RedisModule } from 'src/redis/redis.module';
 import { GymModule } from 'src/gym/gym.module';
@@ -20,7 +21,7 @@ import { GymModule } from 'src/gym/gym.module';
     forwardRef(() => GymModule),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, BlacklistService],
+  providers: [AuthService, JwtStrategy, RefreshTokenStrategy, BlacklistService],
   exports: [AuthService, BlacklistService],
 })
 export class AuthModule {}

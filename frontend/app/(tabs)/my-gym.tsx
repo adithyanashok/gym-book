@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/useToasts";
 
 import {
   addPlan,
+  deletePlan,
   editPlan,
   fetchPlans,
   selectedPlans,
@@ -78,6 +79,16 @@ const MyGym = () => {
     }
   };
 
+  const onDeletePlan = async (id: number) => {
+    console.log(id);
+    try {
+      await dispatch(deletePlan(id)).unwrap();
+      setShowBottomSheet(false);
+    } catch (error) {
+      toast.error(error);
+    }
+  };
+
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <GymDetails gym={gym} />
@@ -104,6 +115,7 @@ const MyGym = () => {
           amount={planValue?.amount}
           duration={planValue?.duration}
           planName={planValue?.name}
+          onDelete={(planId) => onDeletePlan(planId)}
           onCancel={() => {
             setPlanValue(null);
             return setShowBottomSheet(false);

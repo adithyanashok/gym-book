@@ -37,4 +37,16 @@ export const planApi = {
       throw error;
     }
   },
+
+  deletePlan: async (planId: number) => {
+    try {
+      const response = await apiClient.delete<ApiResponse<PlanData>>(
+        `/plans/${planId}`
+      );
+      return response;
+    } catch (error: any) {
+      console.log(error);
+      throw error;
+    }
+  },
 };

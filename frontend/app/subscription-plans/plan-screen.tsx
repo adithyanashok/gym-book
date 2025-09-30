@@ -95,7 +95,6 @@ const SubscriptionPlansScreen: React.FC = () => {
 
   return (
     <SafeScreen>
-      <StatusBar barStyle="dark-content" />
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}

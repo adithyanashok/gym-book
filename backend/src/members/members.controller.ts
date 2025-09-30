@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Logger,
   Param,
@@ -87,6 +88,17 @@ export class MembersController {
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   public updateById(@Param('id') id: number, @Body() updateMemberDto: UpdateMemberDto) {
     return this.membersService.updateById(id, updateMemberDto);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Delete member by Id' })
+  @ApiResponse({
+    status: 201,
+    description: 'Successfully Deleted',
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  public deleteById(@Req() req: AuthenticatedRequest, @Param('id') id: number) {
+    return this.membersService.deleteById(req.user['sub'], id);
   }
 
   // Renew Member Plan

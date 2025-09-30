@@ -2,7 +2,7 @@ import jwtConfig from './config/jwt.config';
 import type { ConfigType } from '@nestjs/config';
 import * as jwtConfigNS from './config/jwt.config';
 import { JwtService } from '@nestjs/jwt';
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Gym } from 'src/gym/entities/gym.entity';
 
 @Injectable()
@@ -45,30 +45,5 @@ export class AuthService {
     ]);
 
     return { accessToken, refreshToken };
-  }
-
-  public async refreshTokens(refreshToken: string) {
-    try {
-      // Verify the refresh token
-      const payload = await this.jwtService.verifyAsync(refreshToken, {
-        secret: this.jwtConfig.secret,
-      });
-
-      // Check if it's a refresh token
-      if (!payload.isRefreshToken) {
-        throw new UnauthorizedException('Invalid token type');
-      }
-
-      const gym = {
-        id: payload.sub,
-        user_phone: payload.phone,
-        role: payload.role,
-      } as Gym;
-
-      // Generate new tokens
-      return await this.generateToken(gym);
-    } catch (error) {
-      throw new UnauthorizedException('Invalid refresh token');
-    }
   }
 }

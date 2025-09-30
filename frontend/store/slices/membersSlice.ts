@@ -8,8 +8,7 @@ import {
   MemberData,
 } from "@/types/member.types";
 import { RootState } from "../store";
-import { ApiError } from "@/types/error.type";
-import { Payment } from "@/types/payment.type";
+import { Payment } from "@/types/subsctiption.type";
 
 // Define the state interface
 interface MembersState {
@@ -61,18 +60,15 @@ export const fetchMembers = createAsyncThunk(
 // Add new Member
 export const createMember = createAsyncThunk(
   "members/createMember",
-  async (
-    body: { memberData: MemberData; fileData: FormData },
-    { rejectWithValue }
-  ) => {
+  async (body: { memberData: MemberData; fileData: FormData }, thunkAPI) => {
     try {
       const response = await membersApi.createMember(body.memberData);
+
       addMemberImage({ id: response.data.id, formData: body.fileData });
+
       return response;
     } catch (error) {
-      return rejectWithValue(
-        error instanceof Error ? error.message : "An unknown error occurred"
-      );
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );
@@ -80,14 +76,12 @@ export const createMember = createAsyncThunk(
 // Get Member By Id
 export const getMemberById = createAsyncThunk(
   "members/getMemberById",
-  async (body: number, { rejectWithValue }) => {
+  async (body: number, thunkAPI) => {
     try {
       const response = await membersApi.getMemberById(body);
       return response;
     } catch (error) {
-      return rejectWithValue(
-        error instanceof Error ? error.message : "An unknown error occurred"
-      );
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );
@@ -128,7 +122,7 @@ export const editMember = createAsyncThunk(
   }
 );
 
-// Edit Member
+// Image Member
 export const addMemberImage = createAsyncThunk(
   "members/addMemberImage",
   async (
@@ -157,6 +151,18 @@ export const getPayments = createAsyncThunk(
       return rejectWithValue(
         error instanceof Error ? error.message : "An unknown error occurred"
       );
+    }
+  }
+);
+// Delete Member
+export const deleteMember = createAsyncThunk(
+  "members/deleteMember",
+  async (id: number, thunkAPI) => {
+    try {
+      const response = await membersApi.deleteMember(id);
+      return response;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );
@@ -314,6 +320,26 @@ const membersSlice = createSlice({
         }
       )
       .addCase(getPayments.rejected, (state, action) => {
+        state.fetchPaymentLoading = false;
+        state.error = action.payload as string;
+      })
+
+      //DELETE MEMBER
+      .addCase(deleteMember.pending, (state) => {
+        state.fetchPaymentLoading = true;
+        state.error = null;
+      })
+      .addCase(
+        deleteMember.fulfilled,
+        (state, action: PayloadAction<ApiResponse<Member>>) => {
+          state.fetchPaymentLoading = false;
+          state.error = null;
+          state.items = [
+            ...state.items.filter((item) => item.id !== action.payload.data.id),
+          ];
+        }
+      )
+      .addCase(deleteMember.rejected, (state, action) => {
         state.fetchPaymentLoading = false;
         state.error = action.payload as string;
       });

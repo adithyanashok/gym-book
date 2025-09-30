@@ -16,6 +16,7 @@ import { GetExpiration } from 'src/common/providers/get-expiresin.providers';
 import { MembershipService } from 'src/membership/membership.service';
 import { GymService } from 'src/gym/gym.service';
 import { SearchMemberDto } from './dtos/search-member.dto';
+import { CheckLimitProvider } from '../common/providers/check-limit.provider';
 
 @Injectable()
 export class MembersService {
@@ -60,11 +61,27 @@ export class MembersService {
      * Injecting gymService
      */
     private readonly gymService: GymService,
+
+    /**
+     * Injecting checkLimitProvider
+     */
+    private readonly checkLimitProvider: CheckLimitProvider,
   ) {}
 
   // Create a new member
   public async create(gymId: number, createMemberDto: CreateMemberDto) {
     try {
+      const gym = await this.gymService.findOneById(gymId);
+      const members = await this.memberRepository.find({ where: { gym } });
+      console.log(gym);
+      if (this.checkLimitProvider.hasReachedMemberLimit(gym, members)) {
+        console.log('Maximum');
+
+        throw new BadRequestException(
+          `Gym has reached the maximum members. Upgrade your plan to add more members.`,
+        );
+      }
+
       // Throw new error if phone number already exist
       if (await this.checkEmailAndPhoneProvider.phoneExists(createMemberDto.phone)) {
         throw new BadRequestException(`Member with ${createMemberDto.phone} is exist`);
@@ -76,8 +93,6 @@ export class MembersService {
       }
 
       const plan = await this.planService.findOneBy(createMemberDto.planId);
-
-      const gym = await this.gymService.findOneById(gymId);
 
       if (!plan) {
         throw new BadRequestException(`Plan with ID ${createMemberDto.planId} is not exist`);
@@ -162,6 +177,27 @@ export class MembersService {
 
       // Return response
       return new ApiResponse(true, 'Successfully Updated', { ...updatedMember, expiresIn, status });
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
+  // Delete Member
+  public async deleteById(gymId: number, id: number) {
+    try {
+      // Find Member
+      const member = await this.memberRepository.findOneBy({ id });
+
+      if (!member) {
+        throw new BadRequestException(`Member with ID ${id} is not exist`);
+      }
+
+      // Delete Member
+      await this.memberRepository.delete({ id, gym: { id: gymId } });
+
+      // Return response
+      return new ApiResponse(true, 'Successfully Deleted', member);
     } catch (error) {
       console.log(error);
       throw error;

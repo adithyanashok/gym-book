@@ -114,17 +114,11 @@ export default function AddMember() {
           createMember({ memberData: formData, fileData })
         ).unwrap();
 
-        await dispatch(
-          addMemberImage({
-            id: response.data.id,
-            formData: fileData,
-          })
-        ).unwrap();
-
         toast.success("Success, Member created successfully!");
         // router.back();
       }
     } catch (error: unknown) {
+      console.log("error: ", error);
       toast.error(error as string);
     }
   };

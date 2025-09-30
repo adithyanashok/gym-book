@@ -70,6 +70,9 @@ export class Gym {
   @Column({ type: 'varchar', nullable: true })
   fcm_token?: string;
 
+  @Column({ type: 'varchar', nullable: true })
+  refreshToken?: string;
+
   @CreateDateColumn()
   createdAt: Date;
 

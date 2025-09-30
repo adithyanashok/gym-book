@@ -81,7 +81,7 @@ export const logout = createAsyncThunk(
       await gymApi.logout();
       await STORAGE.removeData("accessToken");
       await STORAGE.removeData("refreshToken");
-      await STORAGE.removeData("userId");
+      await STORAGE.removeData("gymId");
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }

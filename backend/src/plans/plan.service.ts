@@ -9,6 +9,7 @@ import { Member } from 'src/members/entities/member.entity';
 import { GetByDateDto } from 'src/common/dtos/get-by-date.dto';
 import { addMonths } from 'date-fns';
 import { GymService } from 'src/gym/gym.service';
+import { CheckLimitProvider } from 'src/common/providers/check-limit.provider';
 
 @Injectable()
 export class PlanService {
@@ -29,6 +30,11 @@ export class PlanService {
      * Injecting gymService
      */
     private readonly gymService: GymService,
+
+    /**
+     * Injecting checkLimitProvider
+     */
+    private readonly checkLimitProvider: CheckLimitProvider,
   ) {}
 
   // Get plan
@@ -45,10 +51,16 @@ export class PlanService {
     }
   }
 
-  // Createing new plan
+  // Creating new plan
   public async create(gymId: number, createPlanDto: CreatePlanDto) {
     try {
       const gym = await this.gymService.findOneById(gymId);
+      console.log(gym);
+      if (gym.plans && this.checkLimitProvider.hasReachedPlanLimit(gym, gym.plans)) {
+        throw new BadRequestException(
+          `Gym has reached the maximum plans. Upgrade your plan to add more plans.`,
+        );
+      }
 
       if (!gym) {
         throw new NotFoundException('Gym not found');
@@ -106,66 +118,28 @@ export class PlanService {
     }
   }
 
-  // // Createing new user plan
-  // public async getRevanueByDate(dateRange: GetByDateDto) {
-  //   try {
-  //     const { startDate } = dateRange;
+  public async deleteById(gymId: number, id: number) {
+    try {
+      // Find Plan
+      const Plan = await this.planRepository.findOne({ where: { id, gym: { id: gymId } } });
 
-  //     // Convert string dates to Date objects
-  //     const start = new Date(startDate);
-  //     const end = addMonths(start, 1);
-  //     end.setHours(23, 59, 59, 999);
+      if (!Plan) {
+        throw new BadRequestException(`Plan with ID ${id} is not exist`);
+      }
 
-  //     // Query members created within date range
-  //     const userPlan = await this.userPlanRepository
-  //       .createQueryBuilder('userPlan')
-  //       .where('userPlan.createdAt BETWEEN :start AND :end', { start, end })
-  //       .leftJoinAndSelect('userPlan.member', 'member')
-  //       .leftJoinAndSelect('member.plan', 'plan')
-  //       .orderBy('userPlan.createdAt', 'ASC')
-  //       .getMany();
+      // Delete Plan
+      await this.planRepository.delete({ id, gym: { id: gymId } });
 
-  //     // Group plans by month and count them
-  //     const monthlyRevenue = userPlan.reduce((prevUserPlan, userPlan) => {
-  //       const monthYear = userPlan.createdAt.toLocaleString('default', {
-  //         month: 'long',
-  //         year: 'numeric',
-  //       });
-
-  //       if (!prevUserPlan[monthYear]) {
-  //         prevUserPlan[monthYear] = 0;
-  //       }
-
-  //       // Add the plan amount to the monthly total
-  //       prevUserPlan[monthYear] += userPlan.member.plan.amount;
-
-  //       return prevUserPlan;
-  //     }, {});
-  //     // Convert to array format
-  //     const result = Object.entries(monthlyRevenue).map(([month, revanue]) => ({
-  //       month,
-  //       revanue,
-  //     }));
-
-  //     const totalRevanue = userPlan.reduce(
-  //       (prev, userPlan) => {
-  //         prev['totalRev'] += userPlan.member.plan.amount;
-
-  //         return prev;
-  //       },
-  //       { totalRev: 0 },
-  //     );
-  //     const data = {
-  //       totalRevanue: totalRevanue.totalRev,
-  //       monthlyRevenues: result,
-  //     };
-
-  //     return new ApiResponse(true, 'Successfully Fetched', data);
-  //   } catch (error) {
-  //     console.log(error);
-  //     throw new BadRequestException();
-  //   }
-  // }
+      // Return response
+      return new ApiResponse(true, 'Successfully Deleted', Plan);
+    } catch (error) {
+      if (error.code === '23503') {
+        throw new BadRequestException('Plan is associated with a member. Cannot delete the plan');
+      }
+      console.log(error);
+      throw error;
+    }
+  }
 
   // Get plan distribution
   public async getPlanDistribution(gymId: number, dateRangeDto: GetByDateDto) {

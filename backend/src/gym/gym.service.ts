@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -17,7 +18,7 @@ import { JwtService } from '@nestjs/jwt';
 import { BlacklistService } from 'src/blacklist/blacklist.service';
 import { SignInDto } from 'src/auth/dtos/signin.dto';
 import { AddGymDto } from './dtos/add-gym.dto';
-import { AuthenticatedRequest } from 'src/common/request/request';
+// Removed argon2 dependency as we store refresh tokens in plain form currently
 
 @Injectable()
 export class GymService {
@@ -128,9 +129,9 @@ export class GymService {
       gymExist.active = true;
       gymExist.fcm_token = otpVerifyDto.fcm_token;
 
-      await this.gymRepository.save(gymExist);
-
       const tokens = await this.authService.generateToken(gymExist);
+      gymExist.refreshToken = tokens.refreshToken;
+      await this.gymRepository.save(gymExist);
 
       return new ApiResponse(true, `Otp verified`, {
         accessToken: tokens.accessToken,
@@ -149,10 +150,23 @@ export class GymService {
       throw new UnauthorizedException();
     }
     try {
-      // Decode token to get expiry
-      const decoded = this.jwtService.decode<AuthenticatedRequest>(token);
-
-      const expiry = decoded.user.exp - Math.floor(Date.now() / 1000);
+      // Decode token to get expiry (safely narrow the payload)
+      const decoded: unknown = this.jwtService.decode(token);
+      if (!decoded || typeof decoded === 'string') {
+        throw new UnauthorizedException('Invalid token');
+      }
+      const decodedObj = decoded as Record<string, unknown>;
+      const user = decodedObj['user'];
+      if (
+        !user ||
+        typeof user !== 'object' ||
+        user === null ||
+        typeof (user as Record<string, unknown>)['exp'] !== 'number'
+      ) {
+        throw new UnauthorizedException('Invalid token');
+      }
+      const expiry =
+        ((user as Record<string, unknown>)['exp'] as number) - Math.floor(Date.now() / 1000);
 
       // Add to blacklist
       await this.blacklistService.blacklistToken(token, expiry);
@@ -228,7 +242,10 @@ export class GymService {
   // Find one Gym by id
   public async findOneById(id: number) {
     try {
-      const gym = await this.gymRepository.findOneBy({ id });
+      const gym = await this.gymRepository.findOne({
+        where: { id },
+        relations: ['subscriptionPlan', 'plans'],
+      });
 
       if (!gym) {
         throw new NotFoundException('Gym Not Found');
@@ -253,6 +270,25 @@ export class GymService {
       }
 
       return new ApiResponse(true, 'Gym Fetched successfully', gym);
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
+  async refreshToken(gymId: number, refreshToken: string) {
+    try {
+      const gym = await this.gymRepository.findOneBy({ id: gymId });
+      if (!gym || gym.refreshToken === null) {
+        throw new BadRequestException('Access denied');
+      }
+      const refreshTokenMatches = gym.refreshToken === refreshToken;
+      if (!refreshTokenMatches) throw new ForbiddenException('access_denied');
+
+      const tokens = await this.authService.generateToken(gym);
+      gym.refreshToken = tokens.refreshToken;
+      await this.gymRepository.save(gym);
+      return new ApiResponse(true, 'Token refreshed successfully', tokens);
     } catch (error) {
       console.log(error);
       throw error;

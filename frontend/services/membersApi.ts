@@ -5,8 +5,7 @@ import {
   MemberData,
 } from "@/types/member.types";
 import { apiClient } from "./apiClient";
-import { STORAGE } from "@/utils/storage";
-import { Payment } from "@/types/payment.type";
+import { Payment } from "@/types/subsctiption.type";
 
 // Specific API functions with proper typing
 export const membersApi = {
@@ -58,6 +57,7 @@ export const membersApi = {
 
       return response;
     } catch (error: any) {
+      console.log(error);
       throw error;
     }
   },
@@ -104,11 +104,9 @@ export const membersApi = {
     }
   },
 
-  deleteMember: async (
-    id: number
-  ): Promise<ApiResponse<{ message: string }>> => {
+  deleteMember: async (id: number) => {
     try {
-      const response = await apiClient.delete<ApiResponse<{ message: string }>>(
+      const response = await apiClient.delete<ApiResponse<Member>>(
         `/members/${id}`
       );
       return response;

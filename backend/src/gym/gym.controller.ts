@@ -1,8 +1,17 @@
-import { Body, Controller, Delete, Get, ParseIntPipe, Patch, Query, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+  Req,
+} from '@nestjs/common';
 import { GymService } from './gym.service';
 import { AddGymDto } from './dtos/add-gym.dto';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { Public } from 'src/common/decorators/public.decorator';
 import type { AuthenticatedRequest } from 'src/common/request/request';
 import { UpdateGymDto } from './dtos/update-gym.dto';
 
@@ -61,5 +70,15 @@ export class GymController {
   @ApiResponse({ status: 404, description: 'Gym not found.' })
   public async get(@Req() req: AuthenticatedRequest) {
     return await this.gymService.getGym(req.user['sub']);
+  }
+
+  @Post('logout')
+  @ApiOperation({ summary: 'Logout gym user' })
+  @ApiResponse({ status: 200, description: 'Successfully logged out' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  public async logout(@Req() req: AuthenticatedRequest) {
+    const authHeader = req.headers['authorization'];
+    const token = typeof authHeader === 'string' ? authHeader.split(' ')[1] : undefined;
+    return await this.gymService.logout(token);
   }
 }

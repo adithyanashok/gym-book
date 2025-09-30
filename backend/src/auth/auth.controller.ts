@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req } from '@nestjs/common';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dtos/signin.dto';
 
@@ -6,9 +6,10 @@ import { Public } from 'src/common/decorators/public.decorator';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { StaffsService } from 'src/staffs/staffs.service';
 import { OtpVerifyDto } from './dtos/otp-verify.dto';
-import { RefreshTokenDto } from './dtos/refresh-token.dto';
 import type { Request } from 'express';
 import { GymService } from 'src/gym/gym.service';
+import { RefreshTokenGuard } from './guards/refreshToken.guard';
+import type { AuthenticatedRequest } from 'src/common/request/request';
 
 @Controller('auth')
 export class AuthController {
@@ -80,21 +81,15 @@ export class AuthController {
     return this.gymService.verifyOtp(otpVerifyDto);
   }
 
-  @Public()
-  @Post('/refresh')
-  @ApiOperation({
-    summary: 'Refresh access token',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Tokens refreshed successfully',
-  })
-  @ApiResponse({
-    status: 401,
-    description: 'Invalid refresh token',
-  })
-  async refreshToken(@Body() refreshTokenDto: RefreshTokenDto) {
-    return await this.authService.refreshTokens(refreshTokenDto.refreshToken);
+  @UseGuards(RefreshTokenGuard)
+  @Post('refresh-token')
+  @ApiOperation({ summary: 'Refresh access token' })
+  @ApiResponse({ status: 200, description: 'Token refreshed successfully' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  public async refreshToken(@Req() req: AuthenticatedRequest) {
+    const authHeader = req.headers['authorization'];
+    const token = typeof authHeader === 'string' ? authHeader.split(' ')[1] : undefined;
+    return await this.gymService.refreshToken(req.user['sub'], token as string);
   }
 
   @ApiBearerAuth()

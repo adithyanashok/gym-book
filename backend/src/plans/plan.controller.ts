@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, Query, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreatePlanDto } from './dtos/create-plan.dto';
 import { UpdatePlanDto } from './dtos/update-plan.dto';
@@ -52,14 +52,16 @@ export class PlansController {
     return this.planService.updateById(id, updateplanDto);
   }
 
-  // @Get('/get/by-date')
-  // @ApiOperation({ summary: 'Get revanue by date range' })
-  // @ApiResponse({ status: 200, description: 'revanue retrieved successfully' })
-  // @ApiResponse({ status: 400, description: 'Invalid date range' })
-  // public async getMembersByDateRange(@Query() dateRangeDto: GetByDateDto) {
-  //   console.log('Date range:', dateRangeDto);
-  //   return await this.planService.getRevanueByDate(dateRangeDto);
-  // }
+  @Delete(':id')
+  @ApiOperation({ summary: 'Delete plan By Id' })
+  @ApiResponse({
+    status: 201,
+    description: 'Successfully Deleted',
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  public deleteById(@Req() req: AuthenticatedRequest, @Param('id') id: number) {
+    return this.planService.deleteById(req.user['sub'], id);
+  }
 
   @Get('/get-plan-distribution')
   @ApiOperation({ summary: 'Get plan distribution' })

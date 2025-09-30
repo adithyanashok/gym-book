@@ -16,9 +16,10 @@ export class Membership {
   endDate: Date;
 
   @ManyToOne(() => Member, {
-    onDelete: 'NO ACTION',
+    onDelete: 'SET NULL',
     onUpdate: 'NO ACTION',
-    nullable: false,
+    cascade: true,
+    nullable: true,
   })
   @JoinColumn({ name: 'memberId' })
   member: Member;

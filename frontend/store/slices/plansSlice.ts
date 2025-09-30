@@ -26,9 +26,7 @@ export const fetchPlans = createAsyncThunk(
       const response = await planApi.getPlans();
       return response;
     } catch (error) {
-      return thunkAPI.rejectWithValue(
-        error instanceof Error ? error.message : "An unknown error occurred"
-      );
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );
@@ -40,9 +38,7 @@ export const addPlan = createAsyncThunk(
       const response = await planApi.addPlan(plan);
       return response;
     } catch (error) {
-      return thunkAPI.rejectWithValue(
-        error instanceof Error ? error.message : "An unknown error occurred"
-      );
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );
@@ -54,9 +50,19 @@ export const editPlan = createAsyncThunk(
       const response = await planApi.editPlan(plan);
       return response;
     } catch (error) {
-      return thunkAPI.rejectWithValue(
-        error instanceof Error ? error.message : "An unknown error occurred"
-      );
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
+export const deletePlan = createAsyncThunk(
+  "plans/delete-plan",
+  async (planId: number, thunkAPI) => {
+    try {
+      const response = await planApi.deletePlan(planId);
+      return response;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );
@@ -125,6 +131,24 @@ const plansSlice = createSlice({
         }
       )
       .addCase(editPlan.rejected, (state, action) => {
+        state.loading = "failed";
+        state.error = action.payload as string;
+      })
+      .addCase(deletePlan.pending, (state) => {
+        state.loading = "pending";
+        state.error = null;
+      })
+      .addCase(
+        deletePlan.fulfilled,
+        (state, action: PayloadAction<ApiResponse<PlanData>>) => {
+          state.loading = "succeeded";
+          state.error = null;
+          state.items = [
+            ...state.items.filter((item) => item.id !== action.payload.data.id),
+          ];
+        }
+      )
+      .addCase(deletePlan.rejected, (state, action) => {
         state.loading = "failed";
         state.error = action.payload as string;
       });

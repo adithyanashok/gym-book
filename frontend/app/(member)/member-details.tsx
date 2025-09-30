@@ -11,7 +11,12 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
+import {
+  router,
+  useLocalSearchParams,
+  useNavigation,
+  useRouter,
+} from "expo-router";
 import {
   Ionicons,
   MaterialCommunityIcons,
@@ -28,6 +33,7 @@ import PaymentHistory from "./components/PaymentHistory";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import {
+  deleteMember,
   getMemberById,
   getPayments,
   selectMember,
@@ -61,6 +67,16 @@ export default function MemberDetails() {
     };
     fetchDatas();
   }, [dispatch, memberId]);
+
+  const onDeleteMember = async () => {
+    console.log(memberId);
+    try {
+      await dispatch(deleteMember(memberId)).unwrap();
+      router.back();
+    } catch (error) {
+      toast.error(error);
+    }
+  };
 
   const member = useSelector(selectMember);
   const payment = useSelector(selectPaymentHistory);
@@ -101,7 +117,7 @@ export default function MemberDetails() {
 
         {/* Payment History */}
         <PaymentHistory payment={payment} />
-        <TouchableOpacity style={styles.removeButton} onPress={() => {}}>
+        <TouchableOpacity style={styles.removeButton} onPress={onDeleteMember}>
           <Text style={styles.removeButtonText}>Remove {member.name}</Text>
         </TouchableOpacity>
       </ScrollView>
