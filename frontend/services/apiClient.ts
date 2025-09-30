@@ -2,8 +2,8 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 import { Platform } from "react-native";
 import { STORAGE } from "@/utils/storage";
 
-const API_BASE_URL = "http://10.0.2.2:3000";
-// const API_BASE_URL = "http://192.168.1.100:3000";
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
+// const API_BASE_URL = "http://192.168.1.102:3000";
 
 // Create axios instance with default config
 const axiosInstance: AxiosInstance = axios.create({
@@ -32,7 +32,41 @@ axiosInstance.interceptors.request.use(
 // Response interceptor to handle errors
 axiosInstance.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        const refreshToken = await STORAGE.getData("refreshToken");
+        if (!refreshToken) {
+          // No refresh token, redirect to login
+          throw new Error("No refresh token available");
+        }
+
+        const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {
+          refreshToken,
+        });
+
+        const { accessToken, refreshToken: newRefreshToken } =
+          response.data.data;
+
+        // Store new tokens
+        await STORAGE.storeData("accessToken", accessToken);
+        await STORAGE.storeData("refreshToken", newRefreshToken);
+
+        // Retry original request with new token
+        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+        return axiosInstance(originalRequest);
+      } catch (refreshError) {
+        // Refresh failed, clear tokens and redirect to login
+        await STORAGE.removeData("accessToken");
+        await STORAGE.removeData("refreshToken");
+        throw new Error("Session expired. Please login again.");
+      }
+    }
+
     console.log("API Error:", error.response?.data?.message || error.message);
     return Promise.reject(error.response?.data?.message || error.message);
   }

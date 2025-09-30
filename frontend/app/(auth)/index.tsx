@@ -22,6 +22,7 @@ import { useToast } from "@/hooks/useToasts";
 import { AppColor } from "@/constants/colors";
 import { ScreenName } from "@/types/screen-name.type";
 import { gymLogin, gymSignup } from "@/store/slices/gymSlice";
+import SafeScreen from "@/components/SafeArea";
 
 export default function LoginScreen() {
   const screen = useLocalSearchParams<{ screenName: ScreenName }>();
@@ -86,63 +87,68 @@ export default function LoginScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}
-    >
-      <View style={styles.content}>
-        <View>
-          <Text style={styles.title}>
-            {screenName === ScreenName.LOGIN
-              ? "Welcome Back"
-              : "Create an account"}
-          </Text>
-          <Text style={styles.subtitle}>
-            Enter your phone number to continue
-          </Text>
+    <SafeScreen>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.container}
+      >
+        <View style={styles.content}>
+          <View>
+            <Text style={styles.title}>
+              {screenName === ScreenName.LOGIN
+                ? "Welcome Back"
+                : "Create an account"}
+            </Text>
+            <Text style={styles.subtitle}>
+              Enter your phone number to continue
+            </Text>
 
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={[styles.input, validationError && { borderColor: "red" }]}
-              placeholder="Enter your phone number"
-              placeholderTextColor={validationError ? "red" : "#9CA3AF"}
-              keyboardType="phone-pad"
-              value={phone}
-              onChangeText={setPhoneNumber}
-              maxLength={10}
-            />
-            <Text style={styles.validationError}>{validationError}</Text>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={[
+                  styles.input,
+                  validationError && { borderColor: "red" },
+                ]}
+                placeholder="Enter your phone number"
+                placeholderTextColor={validationError ? "red" : "#9CA3AF"}
+                keyboardType="phone-pad"
+                value={phone}
+                onChangeText={setPhoneNumber}
+                maxLength={10}
+              />
+              <Text style={styles.validationError}>{validationError}</Text>
+            </View>
+          </View>
+          <View>
+            <TouchableOpacity
+              style={[styles.button, isLoading && styles.buttonDisabled]}
+              onPress={handleSendOTP}
+              disabled={isLoading}
+            >
+              <Text style={styles.buttonText}>
+                {isLoading ? "Sending OTP..." : "Continue"}
+              </Text>
+            </TouchableOpacity>
+            <Text
+              onPress={() =>
+                setScreenName(
+                  screenName === "login" ? ScreenName.SIGNUP : ScreenName.LOGIN
+                )
+              }
+              style={[styles.subtitle, styles.linkText]}
+            >
+              {screenName === ScreenName.LOGIN
+                ? "Don't have an account"
+                : "Already have an account"}
+              ?{" "}
+              <Text style={styles.screenName}>
+                {screenName === ScreenName.LOGIN ? "SignUp" : "SignIn"}
+              </Text>
+            </Text>
           </View>
         </View>
-        <View>
-          <TouchableOpacity
-            style={[styles.button, isLoading && styles.buttonDisabled]}
-            onPress={handleSendOTP}
-            disabled={isLoading}
-          >
-            <Text style={styles.buttonText}>
-              {isLoading ? "Sending OTP..." : "Continue"}
-            </Text>
-          </TouchableOpacity>
-          <Text
-            onPress={() =>
-              setScreenName(
-                screenName === "login" ? ScreenName.SIGNUP : ScreenName.LOGIN
-              )
-            }
-            style={[styles.subtitle, styles.linkText]}
-          >
-            {screenName === ScreenName.LOGIN
-              ? "Don't have an account"
-              : "Already have an account"}
-            ?{" "}
-            <Text style={styles.screenName}>
-              {screenName === ScreenName.LOGIN ? "SignUp" : "SignIn"}
-            </Text>
-          </Text>
-        </View>
-      </View>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </SafeScreen>
   );
 }
 

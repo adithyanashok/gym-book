@@ -7,7 +7,6 @@ import { ApiResponse } from 'src/common/dtos/api-response.dto';
 import { CheckEmailAndPhoneProvider } from './providers/check-email-and-phone.provider';
 import { UpdateMemberDto } from './dtos/update-member.dto';
 import { PlanService } from 'src/plans/plan.service';
-import { UpdateMemberPlanDto } from './dtos/update-member-plan.dto';
 import { GetByDateDto } from '../common/dtos/get-by-date.dto';
 import { AmountsService } from 'src/amounts/amounts.service';
 import { instanceToPlain } from 'class-transformer';
@@ -64,7 +63,7 @@ export class MembersService {
   ) {}
 
   // Create a new member
-  public async create(createMemberDto: CreateMemberDto) {
+  public async create(gymId: number, createMemberDto: CreateMemberDto) {
     try {
       // Throw new error if phone number already exist
       if (await this.checkEmailAndPhoneProvider.phoneExists(createMemberDto.phone)) {
@@ -78,13 +77,13 @@ export class MembersService {
 
       const plan = await this.planService.findOneBy(createMemberDto.planId);
 
-      const gym = await this.gymService.findOneById(createMemberDto.gymId);
+      const gym = await this.gymService.findOneById(gymId);
 
       if (!plan) {
         throw new BadRequestException(`Plan with ID ${createMemberDto.planId} is not exist`);
       }
       if (!gym) {
-        throw new BadRequestException(`Gym with ID ${createMemberDto.gymId} is not exist`);
+        throw new BadRequestException(`Gym with ID ${gymId} is not exist`);
       }
 
       const planDuration = plan.duration;

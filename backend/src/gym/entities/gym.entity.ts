@@ -4,11 +4,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { RoleType } from '../enums/role.enum';
+import { SubscriptionPlan } from 'src/subscription/entities/subscription-plans';
 
 @Entity()
 export class Gym {
@@ -29,6 +31,15 @@ export class Gym {
 
   @OneToMany(() => Plan, (plan) => plan.gym, { cascade: true, onDelete: 'CASCADE' })
   plans?: Plan[];
+
+  @ManyToOne(() => SubscriptionPlan, { cascade: true, onDelete: 'CASCADE' })
+  subscriptionPlan: SubscriptionPlan;
+
+  @Column({ type: 'timestamptz', default: () => "CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata'" })
+  subscriptionStart: Date;
+
+  @Column({ type: 'timestamptz', default: () => "CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata'" })
+  subscriptionEnd: Date;
 
   @Column({
     type: 'int',

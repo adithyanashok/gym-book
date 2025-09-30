@@ -110,20 +110,16 @@ export default function AddMember() {
           type: "image/jpeg",
           name: selectedImage?.fileName || `image_${Date.now()}.jpg`,
         } as any);
-        await dispatch(createMember({ memberData: formData, fileData }))
-          .then(async (e) => {
-            console.log((e.payload as ApiResponse<Member>).data.id);
-            const id = (e.payload as ApiResponse<Member>).data.id;
-            await dispatch(
-              addMemberImage({
-                id: id,
-                formData: fileData,
-              })
-            ).unwrap();
+        const response = await dispatch(
+          createMember({ memberData: formData, fileData })
+        ).unwrap();
+
+        await dispatch(
+          addMemberImage({
+            id: response.data.id,
+            formData: fileData,
           })
-          .catch((e) => {
-            toast.error(e as string);
-          });
+        ).unwrap();
 
         toast.success("Success, Member created successfully!");
         // router.back();
@@ -190,7 +186,7 @@ export default function AddMember() {
         uri: "https://img.myloview.de/sticker/default-profile-picture-avatar-photo-placeholder-vector-illustration-700-205664584.jpg",
       };
 
-  if (isLoading === "pending") {
+  if (isLoading) {
     return <Loading loadingText="Member adding" />;
   }
 

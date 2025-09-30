@@ -65,6 +65,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         backgroundColor: "#ffffff",
       },
     ],
+    [
+      "@stripe/stripe-react-native",
+      {
+        merchantIdentifier: "com.adithyanashokpv.gymapp",
+        enableGooglePay: false,
+      },
+    ],
     // [
     //   "expo-splash-screen",
     //   {
@@ -93,7 +100,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   extra: {
     router: {},
-    apiUrl: process.env.BASE_URL,
+    apiUrl: process.env.EXPO_BASE_URL,
     eas: {
       projectId: "a85bf164-39cc-493c-840f-5c2f0d452449",
     },

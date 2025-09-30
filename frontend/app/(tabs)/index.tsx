@@ -8,7 +8,7 @@ import { getOverview, getStatistics } from "@/store/slices/statisticsSlice";
 import * as Notifications from "expo-notifications";
 import { AppDispatch } from "@/store/store";
 import { getCurrentMonthRange } from "@/utils/dateUtils";
-import { MaterialIcons } from "@expo/vector-icons";
+import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -80,6 +80,14 @@ export default function Index() {
             <Text style={styles.welcomeText}>
               Welcome back {gym?.username ?? ""}
             </Text>
+            <AntDesign
+              onPress={() => {
+                router.push("/subscription-plans/plan-screen");
+              }}
+              name="crown"
+              size={24}
+              color="black"
+            />
           </View>
           <StatiCard />
 

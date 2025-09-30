@@ -1,9 +1,8 @@
 import { EditGymType, Gym, GymData, VerifyOtpData } from "@/types/gym.type";
 import { apiClient } from "./apiClient";
 import { ApiResponse } from "@/types/member.types";
-import { Admin, GymCredential } from "@/types/admin.type";
-import axios from "axios";
-const API_BASE_URL = "http://10.0.2.2:3000";
+import { GymCredential } from "@/types/admin.type";
+import { STORAGE } from "@/utils/storage";
 
 export const gymApi = {
   gymSignup: async (phoneNumber: string) => {
@@ -91,10 +90,27 @@ export const gymApi = {
     }
   },
 
+  updateSubscription: async (id: number) => {
+    try {
+      const response = await apiClient.patch<ApiResponse<Gym>>(
+        `/subscription/update/${id}`
+      );
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  },
+
   logout: async (): Promise<void> => {
     try {
       await apiClient.post("/auth/logout");
+      // Clear tokens on logout
+      await STORAGE.removeData("accessToken");
+      await STORAGE.removeData("refreshToken");
     } catch (error) {
+      // Clear tokens even if logout fails
+      await STORAGE.removeData("accessToken");
+      await STORAGE.removeData("refreshToken");
       throw error;
     }
   },

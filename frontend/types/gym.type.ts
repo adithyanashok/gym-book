@@ -1,4 +1,5 @@
 import { PlanData } from "./plan.type";
+import { SubscriptionPlan } from "./subsctiption.type";
 
 export type Gym = {
   id: number;
@@ -7,6 +8,7 @@ export type Gym = {
   user_email: string;
   gym_name: string;
   plans: PlanData[];
+  subscriptionPlan: SubscriptionPlan;
 };
 
 export type GymData = {

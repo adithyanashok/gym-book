@@ -8,20 +8,21 @@
       },
       "env": {
         "APP_VARIANT": "development",
-        "BASE_URL": "http://localhost:3000"
+        "EXPO_BASE_URL": "http://localhost:3000"
       }
     },
     "preview": {
       "distribution": "internal",
       "env": {
         "APP_VARIANT": "preview",
-        "BASE_URL": "http://localhost:3000"
+        "EXPO_BASE_URL": "http://localhost:3000"
       }
     },
     "production": {
       "distribution": "store",
       "env": {
-        "APP_VARIANT": "production"
+        "APP_VARIANT": "production",
+        "EXPO_BASE_URL": "http://localhost:3000"
       }
     }
   },

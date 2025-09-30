@@ -22,10 +22,6 @@ export class CreateMemberDto {
   @IsNotEmpty()
   planId: number;
 
-  @ApiProperty({ example: 1 })
-  @IsNotEmpty()
-  gymId: number;
-
   @ApiProperty({ example: '123 Main St, City, State, Zip' })
   @IsString()
   @IsNotEmpty()

@@ -6,6 +6,7 @@ import { Public } from 'src/common/decorators/public.decorator';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { StaffsService } from 'src/staffs/staffs.service';
 import { OtpVerifyDto } from './dtos/otp-verify.dto';
+import { RefreshTokenDto } from './dtos/refresh-token.dto';
 import type { Request } from 'express';
 import { GymService } from 'src/gym/gym.service';
 
@@ -77,6 +78,23 @@ export class AuthController {
   })
   public verifyOTP(@Body() otpVerifyDto: OtpVerifyDto) {
     return this.gymService.verifyOtp(otpVerifyDto);
+  }
+
+  @Public()
+  @Post('/refresh')
+  @ApiOperation({
+    summary: 'Refresh access token',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Tokens refreshed successfully',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Invalid refresh token',
+  })
+  async refreshToken(@Body() refreshTokenDto: RefreshTokenDto) {
+    return await this.authService.refreshTokens(refreshTokenDto.refreshToken);
   }
 
   @ApiBearerAuth()

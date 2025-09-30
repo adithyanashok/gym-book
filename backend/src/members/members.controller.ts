@@ -36,8 +36,8 @@ export class MembersController {
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiBody({ type: CreateMemberDto })
-  public createMember(@Body() createMemberDto: CreateMemberDto) {
-    return this.membersService.create(createMemberDto);
+  public createMember(@Req() req: AuthenticatedRequest, @Body() createMemberDto: CreateMemberDto) {
+    return this.membersService.create(req.user['sub'], createMemberDto);
   }
 
   @Get('/get/by-date')

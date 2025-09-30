@@ -17,6 +17,7 @@ import { GymModule } from 'src/gym/gym.module';
     forwardRef(() => StaffsModule),
     ConfigModule.forFeature(jwtConfig),
     JwtModule.registerAsync(jwtConfig.asProvider()),
+    forwardRef(() => GymModule),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, BlacklistService],

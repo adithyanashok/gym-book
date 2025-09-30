@@ -11,6 +11,8 @@ export default function Index() {
     const checkAuth = async () => {
       try {
         const token = await STORAGE.getData("accessToken");
+        const refresh = await STORAGE.getData("refreshToken");
+        console.log(token);
         if (!token) {
           router.replace("/(onboarding)");
           return;

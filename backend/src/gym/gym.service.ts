@@ -17,6 +17,7 @@ import { JwtService } from '@nestjs/jwt';
 import { BlacklistService } from 'src/blacklist/blacklist.service';
 import { SignInDto } from 'src/auth/dtos/signin.dto';
 import { AddGymDto } from './dtos/add-gym.dto';
+import { AuthenticatedRequest } from 'src/common/request/request';
 
 @Injectable()
 export class GymService {
@@ -149,9 +150,9 @@ export class GymService {
     }
     try {
       // Decode token to get expiry
-      const decoded = this.jwtService.decode(token);
+      const decoded = this.jwtService.decode<AuthenticatedRequest>(token);
 
-      const expiry = decoded.exp - Math.floor(Date.now() / 1000);
+      const expiry = decoded.user.exp - Math.floor(Date.now() / 1000);
 
       // Add to blacklist
       await this.blacklistService.blacklistToken(token, expiry);
@@ -242,7 +243,10 @@ export class GymService {
 
   public async getGym(id: number) {
     try {
-      const gym = await this.gymRepository.findOne({ where: { id: id }, relations: ['plans'] });
+      const gym = await this.gymRepository.findOne({
+        where: { id: id },
+        relations: ['plans', 'subscriptionPlan'],
+      });
 
       if (!gym) {
         throw new NotFoundException('Gym Not Found');
