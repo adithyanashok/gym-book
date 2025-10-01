@@ -10,16 +10,16 @@ import {
   Post,
   Query,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { MembersService } from './members.service';
 import { CreateMemberDto } from './dtos/create-member.dto';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UpdateMemberDto } from './dtos/update-member.dto';
-import { UpdateMemberPlanDto } from './dtos/update-member-plan.dto';
 import { GetByDateDto } from 'src/common/dtos/get-by-date.dto';
-import { Public } from 'src/common/decorators/public.decorator';
 import { SearchMemberDto } from './dtos/search-member.dto';
 import type { AuthenticatedRequest } from 'src/common/request/request';
+import { SubscriptionGuard } from 'src/common/guards/subscription.guard';
 
 @ApiBearerAuth()
 @ApiTags('Members')
@@ -37,6 +37,7 @@ export class MembersController {
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiBody({ type: CreateMemberDto })
+  @UseGuards(SubscriptionGuard)
   public createMember(@Req() req: AuthenticatedRequest, @Body() createMemberDto: CreateMemberDto) {
     return this.membersService.create(req.user['sub'], createMemberDto);
   }
@@ -86,6 +87,7 @@ export class MembersController {
     description: 'Successfully Updated',
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @UseGuards(SubscriptionGuard)
   public updateById(@Param('id') id: number, @Body() updateMemberDto: UpdateMemberDto) {
     return this.membersService.updateById(id, updateMemberDto);
   }
@@ -97,26 +99,11 @@ export class MembersController {
     description: 'Successfully Deleted',
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @UseGuards(SubscriptionGuard)
   public deleteById(@Req() req: AuthenticatedRequest, @Param('id') id: number) {
     return this.membersService.deleteById(req.user['sub'], id);
   }
 
-  // Renew Member Plan
-  // @Patch('/renew/:id')
-  // @ApiOperation({ summary: 'Renew member plan' })
-  // @ApiResponse({
-  //   status: 200,
-  //   description: 'Successfully Updated',
-  // })
-  // @ApiResponse({ status: 400, description: 'Bad Request.' })
-  // public async updatePlan(
-  //   @Param('id', ParseIntPipe) id: number,
-  //   @Body() updateMemberPlanDto: UpdateMemberPlanDto,
-  // ) {
-  //   return await this.membersService.updatePlan(id, updateMemberPlanDto);
-  // }
-
-  // Get plan by current plan
   @Get('/plan/:planId')
   @ApiOperation({ summary: 'Get members by current plan' })
   @ApiResponse({

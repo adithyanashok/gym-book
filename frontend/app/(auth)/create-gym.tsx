@@ -1,8 +1,6 @@
 import {
   View,
   Text,
-  TextInput,
-  Button,
   ScrollView,
   TouchableOpacity,
   StyleSheet,
@@ -10,13 +8,7 @@ import {
 import React, { useState } from "react";
 import SafeScreen from "@/components/SafeArea";
 import { AppColor } from "@/constants/colors";
-import {
-  Entypo,
-  Feather,
-  FontAwesome,
-  FontAwesome6,
-  Ionicons,
-} from "@expo/vector-icons";
+import { Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
 import CustomInput from "@/components/CustomInput";
 import addMemberStyle from "../(member)/styles/add-member.styles";
 import { router } from "expo-router";
@@ -220,7 +212,7 @@ const CreateGym = () => {
           <Text style={addMemberStyle.submitButtonText}>Create Gym</Text>
         </TouchableOpacity>
         <PrimaryButton
-          filled={false}
+          notFilled={false}
           onClick={handleSubmit}
           text="+ Add plan"
         />

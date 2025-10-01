@@ -2,10 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { S3 } from 'aws-sdk';
 import * as path from 'path';
-import { MembersModule } from 'src/members/members.module';
 import { MembersService } from 'src/members/members.service';
-import { StaffsService } from 'src/staffs/staffs.service';
-import { DataSource } from 'typeorm';
 import { v4 as uuid4 } from 'uuid';
 @Injectable()
 export class UploadService {
@@ -13,7 +10,6 @@ export class UploadService {
     /**
      * Injecting dataSource
      */
-    private readonly dataSource: DataSource,
     private readonly memberService: MembersService,
     private readonly configService: ConfigService,
   ) {}

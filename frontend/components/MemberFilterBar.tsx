@@ -2,12 +2,12 @@
 import React from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import FilterButton from "./MemberFilterButton";
-import { Plan } from "@/types/plan.types";
+import { PlanData } from "@/types/plan.type";
 
 interface FilterBarProps {
   activeFilter: number;
   onFilterChange: (filter: number) => void;
-  filters: Plan[];
+  filters: PlanData[];
 }
 
 const FilterBar: React.FC<FilterBarProps> = ({

@@ -6,11 +6,9 @@ import {
 } from "expo-camera";
 import { useRef, useState } from "react";
 import { Button, Pressable, StyleSheet, Text, View } from "react-native";
-import { Image } from "expo-image";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { router } from "expo-router";
 type Props = {
   url: string | null;
   takePhoto: (uri: string) => void;
@@ -18,7 +16,6 @@ type Props = {
 export default function Camera({ url, takePhoto }: Props) {
   const [permission, requestPermission] = useCameraPermissions();
   const ref = useRef<CameraView>(null);
-  const [uri, setUri] = useState<string | null>(null);
   const [mode, setMode] = useState<CameraMode>("picture");
   const [facing, setFacing] = useState<CameraType>("back");
   if (!permission) {
@@ -39,7 +36,6 @@ export default function Camera({ url, takePhoto }: Props) {
   const takePicture = async () => {
     const photo = await ref.current?.takePictureAsync();
     if (photo?.uri) {
-      setUri(photo.uri);
       takePhoto(photo?.uri);
     }
   };

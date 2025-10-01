@@ -1,10 +1,4 @@
-import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
+import { View, TextInput, StyleSheet, TouchableOpacity } from "react-native";
 import React, { useCallback, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";

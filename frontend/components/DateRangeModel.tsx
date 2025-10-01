@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { Modal, View, StyleSheet, TouchableOpacity, Text } from "react-native";
-import { AppColor } from "@/constants/colors"; // your color file
+import { AppColor } from "@/constants/colors";
 import DateTimePicker from "react-native-ui-datepicker";
-import { getCurrentMonthRange } from "@/utils/dateUtils";
 type Props = {
   visible: boolean;
   onClose: () => void;

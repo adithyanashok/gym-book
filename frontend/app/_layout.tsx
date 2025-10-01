@@ -4,8 +4,6 @@ import { Stack } from "expo-router";
 import { Provider } from "react-redux";
 import React from "react";
 
-import { StyleSheet } from "react-native";
-
 import * as Notifications from "expo-notifications";
 
 import { StripeProvider } from "@stripe/stripe-react-native";

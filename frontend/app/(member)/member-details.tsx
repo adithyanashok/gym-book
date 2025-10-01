@@ -1,29 +1,8 @@
-import {
-  Text,
-  View,
-  StyleSheet,
-  ScrollView,
-  Image,
-  TouchableOpacity,
-  Linking,
-  Alert,
-  Modal,
-  ActivityIndicator,
-} from "react-native";
+import { Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {
-  router,
-  useLocalSearchParams,
-  useNavigation,
-  useRouter,
-} from "expo-router";
-import {
-  Ionicons,
-  MaterialCommunityIcons,
-  FontAwesome5,
-} from "@expo/vector-icons";
-import { useEffect, useState } from "react";
-import RenewMembership from "./renew-membership";
+import { router, useLocalSearchParams } from "expo-router";
+
+import { useEffect } from "react";
 import MemberDetailsHeader from "./components/MemberDetailsHeader";
 import MemberProfile from "./components/MemberProfile";
 import ActionButtons from "./components/ActionButtons";
@@ -37,17 +16,13 @@ import {
   getMemberById,
   getPayments,
   selectMember,
-  selectMemberLoading,
   selectPaymentHistory,
 } from "@/store/slices/membersSlice";
-import { Button } from "@react-navigation/elements";
 import { fetchPlans } from "@/store/slices/plansSlice";
 import Loading from "@/components/Loading";
 import Error from "@/components/Error";
 import NoData from "@/components/NoData";
 import { useToast } from "@/hooks/useToasts";
-import PrimaryButton from "@/components/PrimaryButton";
-import { AppColor } from "@/constants/colors";
 
 export default function MemberDetails() {
   const toast = useToast();

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "@/store/store";
-import { getGym, selectGym } from "@/store/slices/gymSlice";
+import { getGym, selectGym, selectGymLoading } from "@/store/slices/gymSlice";
 import { useToast } from "@/hooks/useToasts";
 
 import {
@@ -16,7 +16,8 @@ import GymDetails from "@/components/tabs-components/GymDetails";
 import PlansDetails from "@/components/tabs-components/PlansDetails";
 import PlanBottomSheet from "@/components/tabs-components/PlanBottomSheet";
 import { Modal, ScrollView } from "react-native";
-import LogoutButton from "@/components/LogoutButton";
+import Loading from "@/components/Loading";
+import { selectPlanLoading } from "@/store/slices/subscriptionSlice";
 
 const MyGym = () => {
   // STATES
@@ -47,7 +48,9 @@ const MyGym = () => {
 
   // SELECTTORS
   const gym = useSelector(selectGym);
+  const gymLoading = useSelector(selectGymLoading);
   const plans = useSelector(selectedPlans);
+  const plansLoading = useSelector(selectPlanLoading);
 
   // SUBMIT DATA
   const handleSubmit = async () => {
@@ -88,6 +91,10 @@ const MyGym = () => {
       toast.error(error);
     }
   };
+
+  if (gymLoading || plansLoading) {
+    return <Loading loadingText="Loading" />;
+  }
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>

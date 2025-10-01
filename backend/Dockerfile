@@ -1,7 +1,6 @@
-#BUILD STATE
-FROM node:18-alpine as build
+FROM node:18-alpine as builder
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
 COPY package*.json ./
 
@@ -11,21 +10,15 @@ COPY . .
 
 RUN npm run build
 
-#PROD STATE
-FROM node:22-alpine
+FROM node:18-alpine
 
-
-ARG NODE_ENV=production
-ENV NODE_ENV=${NODE_ENV}
-
-
-WORKDIR /usr/src/app
+WORKDIR /app
 
 COPY package*.json ./
 
 RUN npm install --only=production
 
-COPY --from=build /usr/src/app/dist ./dist
+COPY --from=builder /app/dist ./dist
 
 EXPOSE 3000
 

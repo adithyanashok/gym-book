@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   Animated,
-  Dimensions,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SnackbarType } from "@/contexts/SnackbarContext";
@@ -16,8 +15,6 @@ interface SnackbarProps {
   type: SnackbarType;
   onHide: () => void;
 }
-
-const { width } = Dimensions.get("window");
 
 const Snackbar: React.FC<SnackbarProps> = ({ message, type, onHide }) => {
   const translateY = React.useRef(new Animated.Value(-100)).current;

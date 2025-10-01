@@ -1,14 +1,15 @@
-import { fetchMembers, selectMembers } from "@/store/slices/membersSlice";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import {
+  fetchMembers,
+  selectMembers,
+  selectMembersLoading,
+} from "@/store/slices/membersSlice";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useCallback, useEffect, useState } from "react";
 import {
   RefreshControl,
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -19,13 +20,12 @@ import { fetchPlans, selectedPlans } from "@/store/slices/plansSlice";
 import Header from "../../components/Header";
 import SearchBar from "../../components/SearchBar";
 import MemberCardTile from "@/components/MemberCardTile";
+import Loading from "@/components/Loading";
 
 export default function Members() {
   const [refreshing, setRefreshing] = useState(false);
   const [activeFilter, setActiveFilter] = useState(0);
   const dispatch = useDispatch<AppDispatch>();
-
-  const router = useRouter();
 
   useEffect(() => {
     dispatch(fetchPlans());
@@ -35,6 +35,7 @@ export default function Members() {
   }, [dispatch, activeFilter]);
 
   const members = useSelector(selectMembers);
+  const loading = useSelector(selectMembersLoading);
   const plans = useSelector(selectedPlans);
 
   const onRefresh = useCallback(async () => {
@@ -44,6 +45,10 @@ export default function Members() {
 
     setRefreshing(false);
   }, [dispatch]);
+
+  if (loading) {
+    return <Loading loadingText="Loading members" />;
+  }
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>

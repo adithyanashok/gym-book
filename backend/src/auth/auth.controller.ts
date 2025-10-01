@@ -4,7 +4,6 @@ import { SignInDto } from './dtos/signin.dto';
 
 import { Public } from 'src/common/decorators/public.decorator';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { StaffsService } from 'src/staffs/staffs.service';
 import { OtpVerifyDto } from './dtos/otp-verify.dto';
 import type { Request } from 'express';
 import { GymService } from 'src/gym/gym.service';
@@ -18,11 +17,6 @@ export class AuthController {
      * Injecting authService
      */
     private readonly authService: AuthService,
-
-    /**
-     * Injecting staffService
-     */
-    private readonly staffService: StaffsService,
 
     /**
      * Injecting gymService

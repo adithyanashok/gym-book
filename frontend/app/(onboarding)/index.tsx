@@ -1,19 +1,11 @@
 import React from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Image,
-  Dimensions,
-  StatusBar,
-} from "react-native";
+import { View, Text, StyleSheet, Dimensions, StatusBar } from "react-native";
 import { router } from "expo-router";
 import SvgUri from "expo-svg-uri";
 import FeatureCard from "./components/FeatureCard";
 import Footer from "./components/Footer";
 import { ScreenName } from "@/types/screen-name.type";
-const { width, height } = Dimensions.get("window");
+const { height } = Dimensions.get("window");
 
 export default function OnboardingScreen() {
   const handleGetStarted = () => {

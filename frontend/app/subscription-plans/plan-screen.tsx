@@ -6,7 +6,6 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
-  StatusBar,
 } from "react-native";
 import SafeScreen from "@/components/SafeArea";
 import Header from "./components/Header";

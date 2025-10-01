@@ -7,7 +7,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
-import { PlanType } from '../enums/plan.enum';
 import { Gym } from 'src/gym/entities/gym.entity';
 
 @Entity('plan')

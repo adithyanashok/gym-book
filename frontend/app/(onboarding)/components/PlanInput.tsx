@@ -1,8 +1,7 @@
-import { View, Text, TextInput, StyleSheet } from "react-native";
-import React, { useState } from "react";
+import { View, TextInput, StyleSheet } from "react-native";
+import React from "react";
 import { AppColor } from "@/constants/colors";
-import { FontAwesome, FontAwesome6, MaterialIcons } from "@expo/vector-icons";
-import { Picker } from "@react-native-picker/picker";
+import { FontAwesome6, MaterialIcons } from "@expo/vector-icons";
 import RNPickerSelect from "react-native-picker-select";
 
 interface Props {

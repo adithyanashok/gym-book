@@ -1,20 +1,16 @@
 import { AppColor } from "@/constants/colors";
 import { Member } from "@/types/member.types";
 import { formatDate } from "@/utils/dateUtils";
-import { FontAwesome5, MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 import React from "react";
 import {
   ActivityIndicator,
-  Dimensions,
   Image,
   StyleSheet,
   Text,
   TouchableOpacity,
-  TouchableOpacityProps,
   View,
 } from "react-native";
-
-const { width } = Dimensions.get("window");
 
 interface MemberCardProps {
   memberData: Member;
@@ -99,27 +95,21 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
     backgroundColor: "white",
-    borderRadius: 16,
-    marginHorizontal: 8,
+    borderRadius: 14,
+    marginHorizontal: 16,
     marginVertical: 6,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.5,
-    elevation: 5,
+    elevation: 1.6,
   },
   imageContainer: {
     position: "relative",
     marginRight: 12,
   },
   memberImage: {
-    width: 56,
-    height: 56,
+    width: 50,
+    height: 50,
     borderRadius: 28,
     borderWidth: 2,
     borderColor: "#f3f4f6",
@@ -141,7 +131,7 @@ const styles = StyleSheet.create({
   },
   memberName: {
     fontWeight: "600",
-    fontSize: 16,
+    fontSize: 14,
     color: "#1f2937",
     marginBottom: 4,
   },
@@ -152,7 +142,7 @@ const styles = StyleSheet.create({
   },
   memberPhone: {
     color: "#6b7280",
-    fontSize: 14,
+    fontSize: 11,
     marginLeft: 6,
   },
   joinDateContainer: {
@@ -161,7 +151,7 @@ const styles = StyleSheet.create({
   },
   joinDate: {
     color: "#9ca3af",
-    fontSize: 12,
+    fontSize: 11,
     marginLeft: 4,
   },
   rightSection: {
@@ -187,7 +177,7 @@ const styles = StyleSheet.create({
   },
   planText: {
     fontWeight: "600",
-    fontSize: 14,
+    fontSize: 11,
     color: "#ffffff",
     marginBottom: 2,
   },

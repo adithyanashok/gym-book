@@ -1,8 +1,7 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
-import { useRoute } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { useToast } from "@/hooks/useToasts";
 import { logout } from "@/store/slices/gymSlice";

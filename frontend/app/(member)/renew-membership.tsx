@@ -4,7 +4,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Alert,
 } from "react-native";
 import { useState } from "react";
 
@@ -14,10 +13,10 @@ import OrderSummary from "./components/OrderSummary";
 import ActionButtons from "./components/RenewMembershipActionButton";
 import { useDispatch, useSelector } from "react-redux";
 import { selectedPlans } from "@/store/slices/plansSlice";
-import { Plan } from "@/types/plan.types";
 import { AppDispatch } from "@/store/store";
 import { renewMemberPlan } from "@/store/slices/membersSlice";
 import { useToast } from "@/hooks/useToasts";
+import { PlanData } from "@/types/plan.type";
 
 interface RenewMembershipProps {
   member: { id: number; name: string };
@@ -78,7 +77,7 @@ export default function RenewMembership({
     return plans.find((plan) => plan.id === selectedPlan)?.amount || 0;
   };
 
-  const renderPlanOption = (plan: Plan) => (
+  const renderPlanOption = (plan: PlanData) => (
     <TouchableOpacity
       key={plan.id}
       style={[

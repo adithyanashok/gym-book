@@ -1,6 +1,5 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Text, TouchableOpacity, StyleSheet } from "react-native";
 import React from "react";
-import addMemberStyle from "@/app/(member)/styles/add-member.styles";
 import { AppColor } from "@/constants/colors";
 interface Props {
   onClick: () => void;

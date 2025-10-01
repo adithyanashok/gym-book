@@ -1,8 +1,6 @@
 import { View, Text, StyleSheet } from "react-native";
 import React from "react";
-import { Payment } from "@/types/payment.type";
 import { AppColor } from "@/constants/colors";
-import { useLocalSearchParams } from "expo-router";
 import {
   selectMember,
   selectPaymentHistory,

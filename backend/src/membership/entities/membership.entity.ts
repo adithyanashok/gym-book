@@ -1,7 +1,6 @@
 // membership.entity.ts
 import { Gym } from 'src/gym/entities/gym.entity';
 import { Member } from 'src/members/entities/member.entity';
-import { Plan } from 'src/plans/entities/plan.entity';
 import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne } from 'typeorm';
 
 @Entity()

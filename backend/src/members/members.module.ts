@@ -11,10 +11,11 @@ import { GetExpiration } from 'src/common/providers/get-expiresin.providers';
 import { MembershipModule } from 'src/membership/membership.module';
 import { GymModule } from 'src/gym/gym.module';
 import { CheckLimitProvider } from 'src/common/providers/check-limit.provider';
+import { Gym } from 'src/gym/entities/gym.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Member]),
+    TypeOrmModule.forFeature([Member, Gym]),
     PlanModule,
     AmountsModule,
     MembershipModule,

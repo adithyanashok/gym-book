@@ -24,7 +24,7 @@ import {
   editMember,
   selectMemberCreateLoading,
 } from "@/store/slices/membersSlice";
-import { ApiResponse, Member, MemberData } from "@/types/member.types";
+import { MemberData } from "@/types/member.types";
 import { useToast } from "@/hooks/useToasts";
 import Loading from "@/components/Loading";
 import { selectedPlans } from "@/store/slices/plansSlice";
@@ -112,6 +112,10 @@ export default function AddMember() {
         } as any);
         const response = await dispatch(
           createMember({ memberData: formData, fileData })
+        ).unwrap();
+
+        await dispatch(
+          addMemberImage({ id: response.data.id, formData: fileData })
         ).unwrap();
 
         toast.success("Success, Member created successfully!");

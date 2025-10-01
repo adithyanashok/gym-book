@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { GetByDateDto } from 'src/common/dtos/get-by-date.dto';
 import { Repository } from 'typeorm';
 import { ApiResponse } from 'src/common/dtos/api-response.dto';
-import { UserPlan } from 'src/plans/entities/user-plan.entity';
 import { GetRevanueByDateProvider } from './providers/get-revanue-by-date.provider';
 import { addMonths } from 'date-fns';
 import { Membership } from 'src/membership/entities/membership.entity';
@@ -16,12 +15,6 @@ export class RevanueService {
      */
     @InjectRepository(Membership)
     private readonly membershipRepository: Repository<Membership>,
-
-    /**
-     * Injecting planRepository
-     */
-    @InjectRepository(UserPlan)
-    private readonly userPlanRepository: Repository<UserPlan>,
 
     /**
      * Injecting getRevanueByDateProvider

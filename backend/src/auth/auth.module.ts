@@ -1,7 +1,6 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { StaffsModule } from 'src/staffs/staffs.module';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import jwtConfig from './config/jwt.config';
@@ -15,7 +14,6 @@ import { GymModule } from 'src/gym/gym.module';
   imports: [
     RedisModule,
     forwardRef(() => GymModule),
-    forwardRef(() => StaffsModule),
     ConfigModule.forFeature(jwtConfig),
     JwtModule.registerAsync(jwtConfig.asProvider()),
     forwardRef(() => GymModule),

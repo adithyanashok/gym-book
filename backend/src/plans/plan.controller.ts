@@ -1,10 +1,22 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreatePlanDto } from './dtos/create-plan.dto';
 import { UpdatePlanDto } from './dtos/update-plan.dto';
 import { PlanService } from './plan.service';
 import { GetByDateDto } from 'src/common/dtos/get-by-date.dto';
 import type { AuthenticatedRequest } from 'src/common/request/request';
+import { SubscriptionGuard } from 'src/common/guards/subscription.guard';
 @ApiBearerAuth()
 @ApiTags('plans')
 @Controller('plans')
@@ -23,6 +35,7 @@ export class PlansController {
     description: 'Successfully Created',
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @UseGuards(SubscriptionGuard)
   public async create(@Req() req: AuthenticatedRequest, @Body() createplanDto: CreatePlanDto) {
     console.log(createplanDto);
     return this.planService.create(req.user['sub'], createplanDto);
@@ -48,6 +61,7 @@ export class PlansController {
     description: 'Successfully Updated',
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @UseGuards(SubscriptionGuard)
   public updateById(@Param('id') id: number, @Body() updateplanDto: UpdatePlanDto) {
     return this.planService.updateById(id, updateplanDto);
   }
@@ -59,6 +73,7 @@ export class PlansController {
     description: 'Successfully Deleted',
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @UseGuards(SubscriptionGuard)
   public deleteById(@Req() req: AuthenticatedRequest, @Param('id') id: number) {
     return this.planService.deleteById(req.user['sub'], id);
   }

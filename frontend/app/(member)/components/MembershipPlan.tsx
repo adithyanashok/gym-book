@@ -1,12 +1,11 @@
 import { View, Text, TouchableOpacity } from "react-native";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import addMemberStyle from "../styles/add-member.styles";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePickerAndroid from "@react-native-community/datetimepicker";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchPlans, selectedPlans } from "@/store/slices/plansSlice";
-import { AppDispatch } from "@/store/store";
+import { useSelector } from "react-redux";
+import { selectedPlans } from "@/store/slices/plansSlice";
 
 interface MembershipPlanProps {
   formData: {
@@ -36,9 +35,9 @@ const MembershipPlan = ({
     const duration =
       plans.find((plan) => {
         return plan.id === formData.planId;
-      })?.duration || 1;
+      })?.duration ?? 1;
 
-    endDate.setMonth(endDate.getMonth() + duration);
+    endDate.setMonth(endDate.getMonth() + Number(duration));
 
     return endDate.toDateString();
   };

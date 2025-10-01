@@ -1,8 +1,8 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import React from "react";
-import { Payment } from "@/types/payment.type";
 import { AppColor } from "@/constants/colors";
-import { Link, router } from "expo-router";
+import { Link } from "expo-router";
+import { Payment } from "@/types/subsctiption.type";
 type Props = {
   payment: Payment[];
 };

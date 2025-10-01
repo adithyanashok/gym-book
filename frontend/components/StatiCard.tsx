@@ -1,13 +1,10 @@
 import { AppColor } from "@/constants/colors";
 import {
   getOverview,
-  getStatistics,
   selectedCurrentStatistics,
-  selectedStatistics,
 } from "@/store/slices/statisticsSlice";
 import { AppDispatch } from "@/store/store";
 import { MaterialIcons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
@@ -22,6 +19,8 @@ const StatiCard = () => {
   useEffect(() => {
     dispatch(getOverview({ startDate }));
   }, [dispatch, startDate]);
+
+  console.log(statistics);
 
   return (
     <View style={[styles.card]}>
@@ -44,27 +43,27 @@ const StatiCard = () => {
           {/* Members */}
           <View
             style={
-              statistics?.currentMonthData?.memberIncrease ?? 0 > 0
+              (statistics?.currentMonthData?.memberIncrease ?? 0) > 0
                 ? styles.trendContainer
                 : styles.trendDownContainer
             }
           >
             <MaterialIcons
               name={
-                statistics?.currentMonthData?.memberIncrease ?? 0 > 0
+                (statistics?.currentMonthData?.memberIncrease ?? 0) > 0
                   ? "arrow-upward"
                   : "arrow-downward"
               }
               size={12}
               color={
-                statistics?.currentMonthData?.memberIncrease ?? 0 > 0
+                (statistics?.currentMonthData?.memberIncrease ?? 0) > 0
                   ? "#4CAF50"
                   : "red"
               }
             />
             <Text
               style={
-                statistics?.currentMonthData?.memberIncrease ?? 0 > 0
+                (statistics?.currentMonthData?.memberIncrease ?? 0) > 0
                   ? styles.trendupText
                   : styles.trendDownText
               }
@@ -89,27 +88,27 @@ const StatiCard = () => {
           {/* Revanue */}
           <View
             style={
-              statistics?.currentMonthData?.memberIncrease ?? 0 > 0
+              (statistics?.currentMonthData?.revenueIncrease ?? 0) > 0
                 ? styles.trendContainer
                 : styles.trendDownContainer
             }
           >
             <MaterialIcons
               name={
-                statistics?.currentMonthData?.memberIncrease ?? 0 > 0
+                (statistics?.currentMonthData?.revenueIncrease ?? 0) > 0
                   ? "arrow-upward"
                   : "arrow-downward"
               }
               size={12}
               color={
-                statistics?.currentMonthData?.memberIncrease ?? 0 > 0
+                (statistics?.currentMonthData?.revenueIncrease ?? 0) > 0
                   ? "#4CAF50"
                   : "red"
               }
             />
             <Text
               style={
-                statistics?.currentMonthData?.memberIncrease ?? 0 > 0
+                (statistics?.currentMonthData?.revenueIncrease ?? 0) > 0
                   ? styles.trendupText
                   : styles.trendDownText
               }

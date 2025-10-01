@@ -10,7 +10,6 @@ import { PlanModule } from './plans/plan.module';
 import { AmountsModule } from './amounts/amounts.module';
 import { RevanueModule } from './revanue/revanue.module';
 import { AuthModule } from './auth/auth.module';
-import { StaffsModule } from './staffs/staffs.module';
 import jwtConfig from './auth/config/jwt.config';
 import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
@@ -30,6 +29,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { Notification } from './notification/entities/notification.entity';
 import { SubscriptionModule } from './subscription/subscription.module';
 import { SubscriptionPlan } from './subscription/entities/subscription-plans';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 const ENV = process.env.NODE_ENV;
 @Module({
@@ -41,7 +41,18 @@ const ENV = process.env.NODE_ENV;
     }),
 
     ScheduleModule.forRoot(),
-
+    ThrottlerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        throttlers: [
+          {
+            ttl: Number(configService.get('THROTTLE_TTL') ?? 60000),
+            limit: Number(configService.get('THROTTLE_LIMIT') ?? 60),
+          },
+        ],
+      }),
+    }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -62,7 +73,6 @@ const ENV = process.env.NODE_ENV;
     AmountsModule,
     RevanueModule,
     AuthModule,
-    StaffsModule,
     ConfigModule.forFeature(jwtConfig),
     JwtModule.registerAsync(jwtConfig.asProvider()),
     StatisticsModule,
@@ -79,6 +89,11 @@ const ENV = process.env.NODE_ENV;
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
     },
   ],
 })

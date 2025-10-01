@@ -75,7 +75,7 @@ export class PlanService {
       return new ApiResponse(true, 'Plan Created', savedPlan);
     } catch (error) {
       console.log(error);
-      throw new BadRequestException(error);
+      throw error;
     }
   }
 

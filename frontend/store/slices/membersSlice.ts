@@ -64,8 +64,6 @@ export const createMember = createAsyncThunk(
     try {
       const response = await membersApi.createMember(body.memberData);
 
-      addMemberImage({ id: response.data.id, formData: body.fileData });
-
       return response;
     } catch (error) {
       return thunkAPI.rejectWithValue(error);

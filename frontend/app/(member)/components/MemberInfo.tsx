@@ -2,13 +2,10 @@ import { View, Text, TouchableOpacity, StyleSheet, Modal } from "react-native";
 import React, { useState } from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import RenewMembership from "../renew-membership";
-import { Member } from "@/types/member.types";
 import { selectMember } from "@/store/slices/membersSlice";
 import { useSelector } from "react-redux";
 import InfoCard from "@/components/InfoCard";
-type Props = {
-  member: Member;
-};
+
 const MemberInfo = () => {
   const [showRenewModal, setShowRenewModal] = useState(false);
 

@@ -1,14 +1,16 @@
-import LogoutButton from "@/components/LogoutButton";
 import MemberCard from "@/components/MemberCard";
 import NoData from "@/components/NoData";
 import StatiCard from "@/components/StatiCard";
 import { useToast } from "@/hooks/useToasts";
-import { fetchMembers, selectMembers } from "@/store/slices/membersSlice";
-import { getOverview, getStatistics } from "@/store/slices/statisticsSlice";
-import * as Notifications from "expo-notifications";
+import {
+  fetchMembers,
+  selectMembers,
+  selectMembersLoading,
+} from "@/store/slices/membersSlice";
+import { getOverview } from "@/store/slices/statisticsSlice";
 import { AppDispatch } from "@/store/store";
 import { getCurrentMonthRange } from "@/utils/dateUtils";
-import { AntDesign, MaterialIcons } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -22,6 +24,8 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import { selectGym, getGym } from "@/store/slices/gymSlice";
+import Loading from "@/components/Loading";
+import { AppColor } from "@/constants/colors";
 
 export default function Index() {
   const toast = useToast();
@@ -30,6 +34,7 @@ export default function Index() {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const members = useSelector(selectMembers);
+  const loading = useSelector(selectMembersLoading);
   const gym = useSelector(selectGym);
   const { startDate } = getCurrentMonthRange();
 
@@ -57,7 +62,9 @@ export default function Index() {
   if (members.length === 0) {
     return <NoData emptyText="No Members, try adding new member" />;
   }
-
+  if (loading) {
+    return <Loading loadingText="Loading" />;
+  }
   return (
     <SafeAreaView edges={["top"]}>
       <View
@@ -86,7 +93,7 @@ export default function Index() {
               }}
               name="crown"
               size={24}
-              color="black"
+              color={AppColor.primary}
             />
           </View>
           <StatiCard />
@@ -142,6 +149,8 @@ const styles = StyleSheet.create({
   membersContainers: {
     backgroundColor: "white",
     marginTop: 20,
+    marginBottom: 20,
     borderRadius: 10,
+    paddingBottom: 20,
   },
 });

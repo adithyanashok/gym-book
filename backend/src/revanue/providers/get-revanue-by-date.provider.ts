@@ -42,6 +42,7 @@ export class GetRevanueByDateProvider {
 
       return prevMembership;
     }, {});
+
     // Convert to array format
     const result = Object.entries(monthlyRevenue).map(([month, revanue]: [string, number]) => ({
       month,

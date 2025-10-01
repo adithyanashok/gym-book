@@ -33,10 +33,8 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import MonthPicker from "@/components/MonthPicker";
-import { useToast } from "@/hooks/useToasts";
 
 export default function Statistics() {
-  const toast = useToast();
   const [refreshing, setRefreshing] = useState(false);
 
   const dispatch = useDispatch<AppDispatch>();
@@ -58,7 +56,7 @@ export default function Statistics() {
     );
 
     setRefreshing(false);
-  }, [dispatch]);
+  }, [dispatch, selectedMonth]);
 
   useEffect(() => {
     dispatch(getPlanDistribution({ startDate: selectedMonth }));
@@ -94,9 +92,9 @@ export default function Statistics() {
   ) {
     return <Loading loadingText="Loading" />;
   }
-  if (error) {
-    return <Error error="Error" errorText="Something went wrong..." />;
-  }
+  // if (error) {
+  //   return <Error error="Error" errorText="Something went wrong..." />;
+  // }
 
   if (!statistics || !plans || !revenues) {
     return <NoData emptyText="No data available" />;
@@ -116,7 +114,6 @@ export default function Statistics() {
           />
         }
       >
-        {/* Header */}
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Statistics</Text>
           <MonthPicker
@@ -125,64 +122,68 @@ export default function Statistics() {
             // currentYear={2025}
           />
         </View>
-
-        {/* Summary Cards */}
-        <View style={styles.summaryContainer}>
-          <View style={styles.summaryRow}>
-            <SummaryCard
-              label="Total Members"
-              value={statistics.totalMembers}
-              backgroundColor="#4264FB"
-              iconComponent={
-                <Ionicons name="people" size={24} color="#FFFFFF" />
-              }
-            />
-
-            <SummaryCard
-              label="Active Members"
-              value={statistics.currentMonthData.activeMembers}
-              backgroundColor="#10B981"
-              iconComponent={
-                <MaterialCommunityIcons
-                  name="account-check"
-                  size={24}
-                  color="#FFFFFF"
+        {error ? (
+          <Error error="Error" errorText="Something went wrong..." />
+        ) : (
+          <>
+            {/* Summary Cards */}
+            <View style={styles.summaryContainer}>
+              <View style={styles.summaryRow}>
+                <SummaryCard
+                  label="Total Members"
+                  value={statistics.totalMembers}
+                  backgroundColor="#4264FB"
+                  iconComponent={
+                    <Ionicons name="people" size={24} color="#FFFFFF" />
+                  }
                 />
-              }
-            />
-          </View>
 
-          <View style={styles.summaryRow}>
-            <SummaryCard
-              label="New This Month"
-              value={statistics.currentMonthData.newMembers}
-              backgroundColor="#F59E0B"
-              iconComponent={
-                <Ionicons name="person-add" size={24} color="#FFFFFF" />
-              }
-            />
-            <SummaryCard
-              label="Revanue"
-              value={`₹${statistics.currentMonthData.revenue}`}
-              backgroundColor="#EF4444"
-              iconComponent={
-                <FontAwesome5
-                  name="money-bill-wave"
-                  size={20}
-                  color="#FFFFFF"
+                <SummaryCard
+                  label="Active Members"
+                  value={statistics.currentMonthData.activeMembers}
+                  backgroundColor="#10B981"
+                  iconComponent={
+                    <MaterialCommunityIcons
+                      name="account-check"
+                      size={24}
+                      color="#FFFFFF"
+                    />
+                  }
                 />
-              }
-            />
-          </View>
-        </View>
+              </View>
 
-        {/* Plan Distribution */}
-        {plans.length > 0 && (
-          <PlanDistributionChart data={plans} title="Plan Distribution" />
+              <View style={styles.summaryRow}>
+                <SummaryCard
+                  label="New This Month"
+                  value={statistics.currentMonthData.newMembers}
+                  backgroundColor="#F59E0B"
+                  iconComponent={
+                    <Ionicons name="person-add" size={24} color="#FFFFFF" />
+                  }
+                />
+                <SummaryCard
+                  label="Revanue"
+                  value={`₹${statistics.currentMonthData.revenue}`}
+                  backgroundColor="#EF4444"
+                  iconComponent={
+                    <FontAwesome5
+                      name="money-bill-wave"
+                      size={20}
+                      color="#FFFFFF"
+                    />
+                  }
+                />
+              </View>
+            </View>
+            {/* Plan Distribution */}
+            {plans.length > 0 && (
+              <PlanDistributionChart data={plans} title="Plan Distribution" />
+            )}
+
+            {/* Revenue Chart */}
+            {revenues.monthlyRevenues.length > 0 && <RevenueTrendChart />}
+          </>
         )}
-
-        {/* Revenue Chart */}
-        {revenues.monthlyRevenues.length > 0 && <RevenueTrendChart />}
       </ScrollView>
     </SafeAreaView>
   );

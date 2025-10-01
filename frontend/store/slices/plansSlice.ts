@@ -8,14 +8,14 @@ import { PlanData } from "@/types/plan.type";
 // Define the state interface
 interface PlansState {
   items: PlanData[];
-  loading: "idle" | "pending" | "succeeded" | "failed";
+  loading: boolean;
   error: string | null;
 }
 
 // Initial state
 const initialState: PlansState = {
   items: [],
-  loading: "idle",
+  loading: false,
   error: null,
 };
 
@@ -77,52 +77,52 @@ const plansSlice = createSlice({
     },
     resetPlans: (state) => {
       state.items = [];
-      state.loading = "idle";
+      state.loading = false;
       state.error = null;
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(fetchPlans.pending, (state) => {
-        state.loading = "pending";
+        state.loading = true;
         state.error = null;
       })
       .addCase(
         fetchPlans.fulfilled,
         (state, action: PayloadAction<ApiResponse<PlanData[]>>) => {
-          state.loading = "succeeded";
+          state.loading = false;
           state.error = null;
           state.items = action.payload.data;
         }
       )
       .addCase(fetchPlans.rejected, (state, action) => {
-        state.loading = "failed";
+        state.loading = false;
         state.error = action.payload as string;
       })
       .addCase(addPlan.pending, (state) => {
-        state.loading = "pending";
+        state.loading = true;
         state.error = null;
       })
       .addCase(
         addPlan.fulfilled,
         (state, action: PayloadAction<ApiResponse<PlanData>>) => {
-          state.loading = "succeeded";
+          state.loading = false;
           state.error = null;
           state.items.unshift(action.payload.data);
         }
       )
       .addCase(addPlan.rejected, (state, action) => {
-        state.loading = "failed";
+        state.loading = false;
         state.error = action.payload as string;
       })
       .addCase(editPlan.pending, (state) => {
-        state.loading = "pending";
+        state.loading = true;
         state.error = null;
       })
       .addCase(
         editPlan.fulfilled,
         (state, action: PayloadAction<ApiResponse<PlanData>>) => {
-          state.loading = "succeeded";
+          state.loading = false;
           state.error = null;
           state.items = [
             action.payload.data,
@@ -131,17 +131,17 @@ const plansSlice = createSlice({
         }
       )
       .addCase(editPlan.rejected, (state, action) => {
-        state.loading = "failed";
+        state.loading = false;
         state.error = action.payload as string;
       })
       .addCase(deletePlan.pending, (state) => {
-        state.loading = "pending";
+        state.loading = true;
         state.error = null;
       })
       .addCase(
         deletePlan.fulfilled,
         (state, action: PayloadAction<ApiResponse<PlanData>>) => {
-          state.loading = "succeeded";
+          state.loading = false;
           state.error = null;
           state.items = [
             ...state.items.filter((item) => item.id !== action.payload.data.id),
@@ -149,7 +149,7 @@ const plansSlice = createSlice({
         }
       )
       .addCase(deletePlan.rejected, (state, action) => {
-        state.loading = "failed";
+        state.loading = false;
         state.error = action.payload as string;
       });
   },

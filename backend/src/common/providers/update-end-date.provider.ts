@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { addMonths, addYears } from 'date-fns';
-import { PlanType } from 'src/plans/enums/plan.enum';
+import { addMonths } from 'date-fns';
 
 @Injectable()
 export class UpdateEndDateProvider {

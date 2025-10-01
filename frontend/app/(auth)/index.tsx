@@ -7,17 +7,11 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
-  Alert,
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
-import {
-  adminLogin,
-  selectAdmin,
-  selectAdminError,
-  selectLoginResponse,
-} from "@/store/slices/adminSlice";
+
 import { useToast } from "@/hooks/useToasts";
 import { AppColor } from "@/constants/colors";
 import { ScreenName } from "@/types/screen-name.type";

@@ -3,7 +3,6 @@ import {
   Param,
   ParseIntPipe,
   Patch,
-  Post,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';

@@ -1,15 +1,9 @@
-import {
-  getMonthlyRevanues,
-  selectedRevanue,
-} from "@/store/slices/statisticsSlice";
-import { AppDispatch, RootState } from "@/store/store";
-import { getCurrentMonthRange } from "@/utils/dateUtils";
-import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, useWindowDimensions } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
-import Loading from "./Loading";
+import { selectedRevanue } from "@/store/slices/statisticsSlice";
+import { RootState } from "@/store/store";
+import React from "react";
+import { View, Text, StyleSheet } from "react-native";
+import { useSelector } from "react-redux";
 import Error from "./Error";
-import NoData from "./NoData";
 
 const RevenueTrendChart = () => {
   const revanues = useSelector(selectedRevanue);
