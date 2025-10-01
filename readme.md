@@ -43,22 +43,18 @@ A full-stack gym management solution built with React Native and NestJS, designe
 
 ## Clone repository
 
-git clone https://github.com/yourusername/gymflow-manager.git
-cd gymflow-manager
+git clone https://github.com/adithyanashok/gym-book.git
+cd gym-book
 
 ## Backend setup
 
 cd backend
 npm install
-cp .env.example .env
 
-## Configure your database and JWT secrets
-
-npm run migration:run
 npm run start:dev
 
 ## Mobile app setup
 
-cd ../mobile
+cd frontend
 npm install
 npm run ios # or npm run android
